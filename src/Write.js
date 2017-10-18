@@ -14,7 +14,7 @@ function createDocument(path, documentName, data, email, key) {
   return UrlFetchApp.fetch(baseUrl, options)  
 }
 
-function writeToFirestore(path, data, email, key) {  
+function updateDocument(path, data, email, key) {  
   const token = getAuthToken_(email, key);
   
   const firestoreObject = createFirestoreObject(data)
