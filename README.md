@@ -3,7 +3,11 @@
 
 This library allows a user (or service account) to authenticate with Firestore and edit their Firestore database within a Google Apps Script.
 
-## Quickstart with a service account
+## Installation
+In the Google online script editor, select the `Resources` menu item and choose `Libraries...`. In the "Add a library" input box, enter `MX2_NUfxVpaA1XPcZ_N-3wWb_Hp7BVbw3` and click "Add." Choose the most recent version number.
+
+
+## Quick start with a service account
 Follow [these instructions](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) (just the "Creating a service account" section) to obtain a service account email address and private key. Ensure you have given the account full read/write access to the `https://www.googleapis.com/auth/datastore` scope.
 
 Now, with your service account email address `email` and private key `privateKey`, we will create a document with a field `name` with value `test!`.
