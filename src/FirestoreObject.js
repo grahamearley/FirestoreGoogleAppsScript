@@ -1,15 +1,3 @@
-function main() {
-  
-  const data = {
-    "hello" : "friendo",
-    "objectt": { "whoa": "there"},
-    "numberr" : 5,
-    "decimal" : 3.14
-  }
-  
-  createFirestoreObject(data)
-}
-
 function createFirestoreObject(object) {
   const keys = Object.keys(object);
   const firestoreObj = {};
