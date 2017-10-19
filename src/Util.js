@@ -5,5 +5,5 @@ function isInt_(n) {
 
 function base64EncodeSafe_(string) {
   var encoded = Utilities.base64EncodeWebSafe(string);
-  return encoded.replace(/=/g, "");  
+  return encoded.replace(/=/g, "");
 }

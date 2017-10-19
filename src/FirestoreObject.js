@@ -28,39 +28,39 @@ function createFirestoreObject(object) {
         break;
     }
   }
-    
-  return firestoreObj
+  Logger.log(firestoreObj);
+  return firestoreObj;
 }
 
 function wrapString_(string) {
-  return {"stringValue" : string}
+  return {"stringValue" : string};
 }
 
 function wrapObject_(object) {
   
   if (!object) {
-    return {"nullValue": null}
+    return {"nullValue": null};
   }
   
-  return {"mapValue" : createFirestoreObject(object)}
+  return {"mapValue" : createFirestoreObject(object)};
 }
 
 function wrapNumber_(num) {
   if (isInt_(num)) {
     return wrapInt_(num);
   } else {
-    return wrapDouble_(num);           
+    return wrapDouble_(num);
   }
 }
 
 function wrapInt_(int) {
-  return {"integerValue" : int}
+  return {"integerValue" : int};
 }
 
 function wrapDouble_(double) {
-  return {"doubleValue" : double}
+  return {"doubleValue" : double};
 }
 
 function wrapBoolean_(boolean) {
-  return {"booleanValue" : boolean}
+  return {"booleanValue" : boolean};
 }

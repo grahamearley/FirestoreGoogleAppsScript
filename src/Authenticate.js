@@ -10,8 +10,8 @@ function getAuthToken_(email, key) {
    'muteHttpExceptions' : true
   };
   
-  const response = UrlFetchApp.fetch("https://www.googleapis.com/oauth2/v4/token/", options)
-  const responseObj = JSON.parse(response.getContentText())
+  const response = UrlFetchApp.fetch("https://www.googleapis.com/oauth2/v4/token/", options);
+  const responseObj = JSON.parse(response.getContentText());
   
   return responseObj["access_token"];
 }
@@ -34,7 +34,7 @@ function createJwt_(email, key) {
     "iat": nowSeconds
   }
   
-  const jwtHeaderBase64 = base64EncodeSafe_(JSON.stringify(jwtHeader));  
+  const jwtHeaderBase64 = base64EncodeSafe_(JSON.stringify(jwtHeader));
   const jwtClaimBase64 = base64EncodeSafe_(JSON.stringify(jwtClaim));
   
   const signatureInput = jwtHeaderBase64 + "." + jwtClaimBase64;
