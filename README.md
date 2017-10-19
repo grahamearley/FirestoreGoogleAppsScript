@@ -1,4 +1,4 @@
-# Firestore for Google Apps Script
+# Firestore for Google Apps Scripts
 ### A Google Apps Script library for accessing Google Cloud Firestore.
 
 This library allows a user (or service account) to authenticate with Firestore and edit their Firestore database within a Google Apps Script.
