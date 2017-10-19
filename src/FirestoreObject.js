@@ -9,7 +9,6 @@ function createFirestoreObject(object) {
     var val = object[key];
     
     var type = typeof(val);
-    Logger.log(type);
     
     switch(type) {
       case "string":
@@ -29,9 +28,7 @@ function createFirestoreObject(object) {
         break;
     }
   }
-  
-  Logger.log(firestoreObj)
-  
+    
   return firestoreObj
 }
 
