@@ -3,6 +3,8 @@
 
 This library allows a user (or service account) to authenticate with Firestore and edit their Firestore database within a Google Apps Script.
 
+Read how this project was started [here](http://grahamearley.website/blog/2017/10/18/firestore-in-google-apps-script.html).
+
 ## Installation
 In the Google online script editor, select the `Resources` menu item and choose `Libraries...`. In the "Add a library" input box, enter `MX2_NUfxVpaA1XPcZ_N-3wWb_Hp7BVbw3` and click "Add." Choose the most recent version number.
 
