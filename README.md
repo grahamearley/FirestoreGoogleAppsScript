@@ -31,4 +31,4 @@ FirestoreApp.updateDocument("FirstCollection/FirstDocument", data, email, key)
 **Note:** Although you can call `updateDocument` without using `createDocument` to create the document, any documents in your path will not be created and thus you can only access the document by using the path explicitly.
 
 ## Contributions
-Contributions are welcome -- send a pull request! This library is a work in progress and currently only supports creating and updating documents with fields (whose values are strings, numbers, or objects).
+Contributions are welcome -- send a pull request! This library is a work in progress and currently only supports creating and updating documents with fields (whose values are strings, numbers, booleans, or objects).
