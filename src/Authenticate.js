@@ -2,18 +2,13 @@
 //  https://developers.google.com/identity/protocols/OAuth2ServiceAccount#authorizingrequests
 
 function getAuthToken_(email, key) {
-  const encodedJwt = createJwt_(email, key);
-  
-  const payload = {
-    "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
-    "assertion": encodedJwt
-  }
+  const jwt = createJwt_(email, key);
   
   var options = {
    'method' : 'post',
-   'payload' : 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + encodedJwt,
+   'payload' : 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + jwt,
    'muteHttpExceptions' : true
- };
+  };
   
   const response = UrlFetchApp.fetch("https://www.googleapis.com/oauth2/v4/token/", options)
   const responseObj = JSON.parse(response.getContentText())

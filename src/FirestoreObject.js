@@ -20,6 +20,10 @@ function createFirestoreObject(object) {
         break;
       case "number":
         firestoreObj["fields"][key] = wrapNumber_(val);
+        break;
+      case "boolean":
+        firestoreObj["fields"][key] = wrapBoolean_(val);
+        break;
       default:
         // error
         break;
@@ -58,4 +62,8 @@ function wrapInt_(int) {
 
 function wrapDouble_(double) {
   return {"doubleValue" : double}
+}
+
+function wrapBoolean_(boolean) {
+  return {"booleanValue" : boolean}
 }

@@ -1,10 +1,10 @@
-function createDocument(path, documentName, data, email, key) {
+function createDocument(path, documentId, documentData, email, key) {
   const token = getAuthToken_(email, key);
   
-  const firestoreObject = createFirestoreObject(data)
+  const firestoreObject = createFirestoreObject(documentData)
   
-  const baseUrl = "https://firestore.googleapis.com/v1beta1/projects/happy-teacher-2/databases/(default)/documents/" + path + "?documentId=" + documentName;
-  var options = {
+  const baseUrl = "https://firestore.googleapis.com/v1beta1/projects/happy-teacher-2/databases/(default)/documents/" + path + "?documentId=" + documentId;
+  const options = {
    'method' : 'post',
    'muteHttpExceptions' : true,
    'payload': JSON.stringify(firestoreObject),
@@ -14,13 +14,13 @@ function createDocument(path, documentName, data, email, key) {
   return UrlFetchApp.fetch(baseUrl, options)  
 }
 
-function updateDocument(path, data, email, key) {  
+function updateDocument(path, documentData, email, key) {  
   const token = getAuthToken_(email, key);
   
-  const firestoreObject = createFirestoreObject(data)
+  const firestoreObject = createFirestoreObject(documentData)
   
   const baseUrl = "https://firestore.googleapis.com/v1beta1/projects/happy-teacher-2/databases/(default)/documents/" + path
-  var options = {
+  const options = {
    'method' : 'patch',
    'muteHttpExceptions' : true,
    'payload': JSON.stringify(firestoreObject),
