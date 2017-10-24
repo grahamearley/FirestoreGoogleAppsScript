@@ -1,4 +1,4 @@
-function getDocuments(path, email, key, projectId) {  
+function get(path, email, key, projectId) {  
   const token = getAuthToken_(email, key);
     
   const baseUrl = "https://firestore.googleapis.com/v1beta1/projects/" + projectId + "/databases/(default)/documents/" + path;
