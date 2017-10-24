@@ -7,29 +7,28 @@ function createFirestoreObject(object) {
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
     var val = object[key];
-    
-    var type = typeof(val);
-    
-    switch(type) {
+  
+    firestoreObj["fields"][key] = wrapValue_(val);
+  }
+
+  return firestoreObj;
+}
+
+function wrapValue_(value) {
+  var type = typeof(value);
+  switch(type) {
       case "string":
-        firestoreObj["fields"][key] = wrapString_(val);
-        break;
+        return wrapString_(value);
       case "object":
-        firestoreObj["fields"][key] = wrapObject_(val);
-        break;
+        return wrapObject_(value);
       case "number":
-        firestoreObj["fields"][key] = wrapNumber_(val);
-        break;
+        return wrapNumber_(value);
       case "boolean":
-        firestoreObj["fields"][key] = wrapBoolean_(val);
-        break;
+        return wrapBoolean_(value);
       default:
         // error
-        break;
+        return null;
     }
-  }
-  Logger.log(firestoreObj);
-  return firestoreObj;
 }
 
 function wrapString_(string) {
@@ -40,6 +39,10 @@ function wrapObject_(object) {
   
   if (!object) {
     return {"nullValue": null};
+  }
+
+  if (Array.isArray(object)) {
+    return wrapArray_(object);
   }
   
   return {"mapValue" : createFirestoreObject(object)};
@@ -63,4 +66,16 @@ function wrapDouble_(double) {
 
 function wrapBoolean_(boolean) {
   return {"booleanValue" : boolean};
+}
+
+function wrapArray_(array) {
+  const wrappedArray = [];
+
+  for (var i = 0; i < array.length; i++) {
+    var value = array[i];
+    var wrappedValue = wrapValue_(value);
+    wrappedArray.push(wrappedValue);
+  }
+
+  return {"arrayValue" : {"values": wrappedArray}};
 }
