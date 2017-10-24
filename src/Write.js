@@ -19,9 +19,7 @@ function createDocumentWithId(path, documentId, documentData, email, key, projec
   const response = UrlFetchApp.fetch(baseUrl, options);
   const responseObj = getObjectFromResponse(response);
 
-  if (responseObj["error"]) {
-    throw new Error(responseObj["error"]["message"]);
-  }
+  checkForError(responseObj);
   
   return responseObj;
 }

@@ -21,3 +21,9 @@ function removeTrailingSlash_(string) {
 function getObjectFromResponse(response) {
   	return JSON.parse(response.getContentText());
 }
+
+function checkForError(responseObj) {
+	if (responseObj["error"]) {
+    	throw new Error(responseObj["error"]["message"]);
+  	}
+}

@@ -6,6 +6,19 @@ function get(path, email, key, projectId) {
    'muteHttpExceptions' : true,
    'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + token}
   };
+
+  var responseObj = getObjectFromResponse(UrlFetchApp.fetch(baseUrl, options));
+  checkForError(responseObj);
   
-  return getObjectFromResponse(UrlFetchApp.fetch(baseUrl, options));
+  return responseObj;
+}
+
+function getDocumentFields(path, email, key, projectId) {
+  const doc = get(path, email, key, projectId)
+
+  if (!doc["fields"]) {
+    throw new Error("No document with `fields` found at path " + path);
+  }
+
+  return getObjectFromFirestoreObject(doc);
 }
