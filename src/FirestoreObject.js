@@ -14,6 +14,21 @@ function createFirestoreObject(object) {
   return firestoreObj;
 }
 
+function getObjectFromFirestoreObject(firestoreObj) {
+  const fields = firestoreObj["fields"]
+  const keys = Object.keys(fields);
+  const object = {};
+
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    var firestoreValue = fields[key];
+  
+    object[key] = unwrapValue_(firestoreValue);
+  }
+
+  return object;
+}
+
 function wrapValue_(value) {
   var type = typeof(value);
   switch(type) {
@@ -25,6 +40,26 @@ function wrapValue_(value) {
         return wrapNumber_(value);
       case "boolean":
         return wrapBoolean_(value);
+      default:
+        // error
+        return null;
+    }
+}
+
+function unwrapValue_(value) {
+  var type = Object.keys(value)[0];
+  switch(type) {
+      case "stringValue":
+      case "boolean":
+      case "integerValue":
+      case "doubleValue":
+        return value[type];
+      case "nullValue":
+        return null;
+      case "mapVaue":
+        return getObjectFromFirestoreObject(value[type]);
+      case "arrayValue":
+        return unwrapArray_(value[type]["values"])
       default:
         // error
         return null;
@@ -78,4 +113,16 @@ function wrapArray_(array) {
   }
 
   return {"arrayValue" : {"values": wrappedArray}};
+}
+
+function unwrapArray_(wrappedArray) {
+  const array = [];
+
+  for (var i = 0; i < wrappedArray.length; i++) {
+    var wrappedValue = wrappedArray[i];
+    var unwrappedValue = unwrapValue_(wrappedValue);
+    array.push(unwrappedValue);
+  }
+
+  return array;
 }
