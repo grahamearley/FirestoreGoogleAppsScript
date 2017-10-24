@@ -23,14 +23,15 @@ const data = {
 
 Now, we can create a document called `FirstDocument` at a  collection called "FirstCollection":
 ```javascript
-FirestoreApp.createDocument("FirstCollection", "FirstDocument", data, email, key, projectId)
+FirestoreApp.createDocumentWithId("FirstCollection", "FirstDocument", data, email, key, projectId)
 ```
 
 To update the document at this location, we can use the `updateDocument` function:
 ```javascript
 FirestoreApp.updateDocument("FirstCollection/FirstDocument", data, email, key, projectId)
 ```
+
 **Note:** Although you can call `updateDocument` without using `createDocument` to create the document, any documents in your path will not be created and thus you can only access the document by using the path explicitly.
 
 ## Contributions
-Contributions are welcome -- send a pull request! This library is a work in progress and currently only supports creating and updating documents with fields (whose values are strings, numbers, booleans, or objects).
+Contributions are welcome -- send a pull request! This library is a work in progress and currently only supports creating and updating documents with fields (whose values are strings, numbers, booleans, arrays, or objects).
