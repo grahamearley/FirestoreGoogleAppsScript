@@ -1,12 +1,18 @@
-function createFirestoreObject(object) {
-  const keys = Object.keys(object);
+/**
+ * Create a Firestore documents with the correpsonding fields.
+ *
+ * @param {object} fields the document's fields
+ * @return {object} a Firestore document with the given fields
+ */
+function createFirestoreDocument(fields) {
+  const keys = Object.keys(fields);
   const firestoreObj = {};
     
   firestoreObj["fields"] = {};
     
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
-    var val = object[key];
+    var val = fields[key];
   
     firestoreObj["fields"][key] = wrapValue_(val);
   }
@@ -14,8 +20,14 @@ function createFirestoreObject(object) {
   return firestoreObj;
 }
 
-function getObjectFromFirestoreObject(firestoreObj) {
-  const fields = firestoreObj["fields"]
+/**
+ * Extract fields from a Firestore document.
+ *
+ * @param {object} firestoreDoc the Firestore document whose fields will be extracted
+ * @return {object} an object with the given document's fields and values
+ */
+function getFieldsFromFirestoreDocument(firestoreDoc) {
+  const fields = firestoreDoc["fields"];
   const keys = Object.keys(fields);
   const object = {};
 
@@ -57,9 +69,9 @@ function unwrapValue_(value) {
       case "nullValue":
         return null;
       case "mapVaue":
-        return getObjectFromFirestoreObject(value[type]);
+        return getFieldsFromFirestoreDocument(value[type]);
       case "arrayValue":
-        return unwrapArray_(value[type]["values"])
+        return unwrapArray_(value[type]["values"]);
       default:
         // error
         return null;
@@ -80,7 +92,7 @@ function wrapObject_(object) {
     return wrapArray_(object);
   }
   
-  return {"mapValue" : createFirestoreObject(object)};
+  return {"mapValue" : createFirestoreDocument(object)};
 }
 
 function wrapNumber_(num) {

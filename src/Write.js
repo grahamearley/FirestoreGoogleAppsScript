@@ -1,9 +1,20 @@
-function createDocumentWithId(path, documentId, documentData, email, key, projectId) {
+/**
+ * Create a document with the given ID and fields.
+ *
+ * @param {string} path the path where the document will be written
+ * @param {string} documentId the document's ID in Firestore
+ * @param {object} fields the document's fields
+ * @param {string} email the user email address (for authentication)
+ * @param {string} key the user private key (for authentication)
+ * @param {string} projectId the Firestore project ID
+ * @return {object} the Document object written to Firestore
+ */
+function createDocumentWithId(path, documentId, fields, email, key, projectId) {
   const token = getAuthToken_(email, key);
   
-  const firestoreObject = createFirestoreObject(documentData);
+  const firestoreObject = createFirestoreDocument(fields);
   
-  const pathWithNoTrailingSlash = removeTrailingSlash_(path)
+  const pathWithNoTrailingSlash = removeTrailingSlash_(path);
   var baseUrl = "https://firestore.googleapis.com/v1beta1/projects/" + projectId + "/databases/(default)/documents/" + pathWithNoTrailingSlash;
   if (documentId) {
     baseUrl += "?documentId=" + documentId;
@@ -17,21 +28,41 @@ function createDocumentWithId(path, documentId, documentData, email, key, projec
   };
 
   const response = UrlFetchApp.fetch(baseUrl, options);
-  const responseObj = getObjectFromResponse(response);
+  const responseObj = getObjectFromResponse_(response);
 
-  checkForError(responseObj);
+  checkForError_(responseObj);
   
   return responseObj;
 }
 
-function createDocument(path, documentData, email, key, projectId) {
-  return createDocumentWithId(path, null, documentData, email, key, projectId);
+/**
+ * Create a document with the given fields and an auto-generated ID.
+ *
+ * @param {string} path the path where the document will be written
+ * @param {object} fields the document's fields
+ * @param {string} email the user email address (for authentication)
+ * @param {string} key the user private key (for authentication)
+ * @param {string} projectId the Firestore project ID
+ * @return {object} the Document object written to Firestore
+ */
+function createDocument(path, fields, email, key, projectId) {
+  return createDocumentWithId(path, null, fields, email, key, projectId);
 }
 
-function updateDocument(path, documentData, email, key, projectId) {  
+/**
+ * Update/patch a document at the given path with new fields.
+ *
+ * @param {string} path the path of the document to update
+ * @param {object} fields the document's new fields
+ * @param {string} email the user email address (for authentication)
+ * @param {string} key the user private key (for authentication)
+ * @param {string} projectId the Firestore project ID
+ * @return {object} the Document object written to Firestore
+ */
+function updateDocument(path, fields, email, key, projectId) {
   const token = getAuthToken_(email, key);
   
-  const firestoreObject = createFirestoreObject(documentData);
+  const firestoreObject = createFirestoreDocument(fields);
   
   const baseUrl = "https://firestore.googleapis.com/v1beta1/projects/" + projectId + "/databases/(default)/documents/" + path;
   const options = {
@@ -41,5 +72,9 @@ function updateDocument(path, documentData, email, key, projectId) {
    'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + token}
   };
   
-  return UrlFetchApp.fetch(baseUrl, options);
+  const response = UrlFetchApp.fetch(baseUrl, options);
+  const responseObj = getObjectFromResponse_(response);
+  checkForError_(responseObj);
+
+  return responseObj;
 }
