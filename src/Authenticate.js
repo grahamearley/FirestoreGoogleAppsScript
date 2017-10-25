@@ -32,7 +32,7 @@ function createJwt_(email, key) {
     "aud":"https://www.googleapis.com/oauth2/v4/token/",
     "exp": oneHourFromNowSeconds,
     "iat": nowSeconds
-  }
+  };
   
   const jwtHeaderBase64 = base64EncodeSafe_(JSON.stringify(jwtHeader));
   const jwtClaimBase64 = base64EncodeSafe_(JSON.stringify(jwtClaim));
