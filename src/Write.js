@@ -10,29 +10,29 @@
  * @return {object} the Document object written to Firestore
  */
 function createDocumentWithId(path, documentId, fields, email, key, projectId) {
-  const token = getAuthToken_(email, key);
-  
-  const firestoreObject = createFirestoreDocument(fields);
-  
-  const pathWithNoTrailingSlash = removeTrailingSlash_(path);
-  var baseUrl = "https://firestore.googleapis.com/v1beta1/projects/" + projectId + "/databases/(default)/documents/" + pathWithNoTrailingSlash;
-  if (documentId) {
-    baseUrl += "?documentId=" + documentId;
-  }
+    const token = getAuthToken_(email, key);
 
-  const options = {
-   'method' : 'post',
-   'muteHttpExceptions' : true,
-   'payload': JSON.stringify(firestoreObject),
-   'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + token}
-  };
+    const firestoreObject = createFirestoreDocument(fields);
 
-  const response = UrlFetchApp.fetch(baseUrl, options);
-  const responseObj = getObjectFromResponse_(response);
+    const pathWithNoTrailingSlash = removeTrailingSlash_(path);
+    var baseUrl = "https://firestore.googleapis.com/v1beta1/projects/" + projectId + "/databases/(default)/documents/" + pathWithNoTrailingSlash;
+    if (documentId) {
+        baseUrl += "?documentId=" + documentId;
+    }
 
-  checkForError_(responseObj);
-  
-  return responseObj;
+    const options = {
+        'method': 'post',
+        'muteHttpExceptions': true,
+        'payload': JSON.stringify(firestoreObject),
+        'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + token}
+    };
+
+    const response = UrlFetchApp.fetch(baseUrl, options);
+    const responseObj = getObjectFromResponse_(response);
+
+    checkForError_(responseObj);
+
+    return responseObj;
 }
 
 /**
@@ -46,7 +46,7 @@ function createDocumentWithId(path, documentId, fields, email, key, projectId) {
  * @return {object} the Document object written to Firestore
  */
 function createDocument(path, fields, email, key, projectId) {
-  return createDocumentWithId(path, null, fields, email, key, projectId);
+    return createDocumentWithId(path, null, fields, email, key, projectId);
 }
 
 /**
@@ -60,21 +60,21 @@ function createDocument(path, fields, email, key, projectId) {
  * @return {object} the Document object written to Firestore
  */
 function updateDocument(path, fields, email, key, projectId) {
-  const token = getAuthToken_(email, key);
-  
-  const firestoreObject = createFirestoreDocument(fields);
-  
-  const baseUrl = "https://firestore.googleapis.com/v1beta1/projects/" + projectId + "/databases/(default)/documents/" + path;
-  const options = {
-   'method' : 'patch',
-   'muteHttpExceptions' : true,
-   'payload': JSON.stringify(firestoreObject),
-   'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + token}
-  };
-  
-  const response = UrlFetchApp.fetch(baseUrl, options);
-  const responseObj = getObjectFromResponse_(response);
-  checkForError_(responseObj);
+    const token = getAuthToken_(email, key);
 
-  return responseObj;
+    const firestoreObject = createFirestoreDocument(fields);
+
+    const baseUrl = "https://firestore.googleapis.com/v1beta1/projects/" + projectId + "/databases/(default)/documents/" + path;
+    const options = {
+        'method': 'patch',
+        'muteHttpExceptions': true,
+        'payload': JSON.stringify(firestoreObject),
+        'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + token}
+    };
+
+    const response = UrlFetchApp.fetch(baseUrl, options);
+    const responseObj = getObjectFromResponse_(response);
+    checkForError_(responseObj);
+
+    return responseObj;
 }
