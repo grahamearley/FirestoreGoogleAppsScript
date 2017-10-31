@@ -27,3 +27,7 @@ function checkForError_(responseObj) {
         throw new Error(responseObj["error"]["message"]);
     }
 }
+
+function getIdFromPath_(path) {
+    return path.split("/").pop();
+}

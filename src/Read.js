@@ -40,3 +40,33 @@ function getDocumentFields(path, email, key, projectId) {
 
     return getFieldsFromFirestoreDocument(doc);
 }
+
+/**
+ * Get a list of IDs of the documents in a collection.
+ *
+ * @param {string} pathToCollection the path to the collection
+ * @param {string} email the user email address (for authentication)
+ * @param {string} key the user private key (for authentication)
+ * @param {string} projectId the Firestore project ID
+ * @return {object} an array of IDs of the documents in the collection
+ */
+function getDocumentIds(pathToCollection, email, key, projectId) {
+    const response = get(pathToCollection, email, key, projectId);
+    checkForError_(response);
+
+    if (!response["documents"]) {
+        return [];
+    }
+
+    const documents = response["documents"];
+    const ids = [];
+
+    for (var i = 0; i < documents.length; i++) {
+        var document = documents[i];
+        var path = document["name"];
+        var id = getIdFromPath_(path);
+        ids.push(id)
+    }
+
+    return ids;
+}
