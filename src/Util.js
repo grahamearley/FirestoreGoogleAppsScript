@@ -31,3 +31,10 @@ function checkForError_(responseObj) {
 function getIdFromPath_(path) {
     return path.split("/").pop();
 }
+
+function addAll_(array, itemsToAdd) {
+    for (var i = 0; i < itemsToAdd.length; i++) {
+        var item = itemsToAdd[i];
+        array.push(item);
+    }
+}
