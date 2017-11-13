@@ -134,6 +134,10 @@ function wrapArray_(array) {
 function unwrapArray_(wrappedArray) {
     const array = [];
 
+    if (!wrappedArray) {
+        return array;
+    }
+
     for (var i = 0; i < wrappedArray.length; i++) {
         var wrappedValue = wrappedArray[i];
         var unwrappedValue = unwrapValue_(wrappedValue);
