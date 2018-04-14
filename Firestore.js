@@ -86,7 +86,7 @@ Firestore = function(email, key, projectId) {
      * @param {string} path the path to the document
      * @return {object} an object mapping the document's fields to their values
      */
-    this.getDocumentFields = function(path) {
+    this.getDocument = function(path) {
         return getDocumentFields_(path, authToken, projectId);
     };
 
