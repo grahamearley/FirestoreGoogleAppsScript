@@ -18,9 +18,14 @@ Follow [these instructions](https://developers.google.com/identity/protocols/OAu
 After following these instructions, you'll have a JSON file with fields for `private_key` and `client_email`. Copy these into your Google Apps Script! You'll also need to get your project ID — you can find this in your Firebase project settings (under Project ID).
 
 #### Create a test document in Firestore from your script
-Now, with your service account client email address `email` and private key `key`, we will create a Firestore document with a field `name` with value `test!`. You will need your project ID to do this (we'll assume you've stored the ID in a variable called `projectId`).
+Now, with your service account client email address `email`, private key `key`, and project ID `projectId`, we will authenticate with Firestore to get our `Firestore` object. To do this, get the `Firestore` object from the library:
 
-Let's encode these fields as a JSON object:
+```javascript
+var firestore = FirestoreApp.getFirestore(email, key, projectId);
+```
+
+Using this Firestore instance, we will create a Firestore document with a field `name` with value `test!`. Let's encode this as a JSON object:
+
 ```javascript
 const data = {
   "name": "test!"
@@ -29,12 +34,12 @@ const data = {
 
 Now, we can create a document called `FirstDocument` at a collection called `FirstCollection`:
 ```javascript
-FirestoreApp.createDocumentWithId("FirstCollection", "FirstDocument", data, email, key, projectId)
+firestore.createDocumentWithId("FirstDocument", "FirstCollection", data)
 ```
 
 To update the document at this location, we can use the `updateDocument` function:
 ```javascript
-FirestoreApp.updateDocument("FirstCollection/FirstDocument", data, email, key, projectId)
+firestore.updateDocument("FirstCollection/FirstDocument", data)
 ```
 
 **Note:** Although you can call `updateDocument` without using `createDocument` to create the document, any documents in your path will not be created and thus you can only access the document by using the path explicitly.
