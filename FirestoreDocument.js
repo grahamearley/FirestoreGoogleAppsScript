@@ -4,7 +4,7 @@
  * @param {object} fields the document's fields
  * @return {object} a Firestore document with the given fields
  */
-function createFirestoreDocument(fields) {
+function createFirestoreDocument_(fields) {
     const keys = Object.keys(fields);
     const firestoreObj = {};
 
@@ -26,7 +26,7 @@ function createFirestoreDocument(fields) {
  * @param {object} firestoreDoc the Firestore document whose fields will be extracted
  * @return {object} an object with the given document's fields and values
  */
-function getFieldsFromFirestoreDocument(firestoreDoc) {
+function getFieldsFromFirestoreDocument_(firestoreDoc) {
     if (!firestoreDoc || !firestoreDoc["fields"]) {
         return {};
     }
@@ -73,7 +73,7 @@ function unwrapValue_(value) {
         case "nullValue":
             return null;
         case "mapValue":
-            return getFieldsFromFirestoreDocument(value[type]);
+            return getFieldsFromFirestoreDocument_(value[type]);
         case "arrayValue":
             return unwrapArray_(value[type]["values"]);
         default:
@@ -96,7 +96,7 @@ function wrapObject_(object) {
         return wrapArray_(object);
     }
 
-    return {"mapValue": createFirestoreDocument(object)};
+    return {"mapValue": createFirestoreDocument_(object)};
 }
 
 function wrapNumber_(num) {
