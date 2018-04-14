@@ -15,7 +15,7 @@ The easiest way to use this library is to create a Google Service Account for yo
 
 Follow [these instructions](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) (just the "Creating a service account" section) to obtain a service account email address and private key. Ensure you have given the account full read/write access to the Datastore scope. You can do this in the "Create a service account" window by selecting "Datastore" in the "Role" dropdown and choosing "Cloud Datastore Owner."
 
-After following these instructions, you'll have a JSON file with fields for `private_key` and `client_email`. Copy these into your Google Apps Script!
+After following these instructions, you'll have a JSON file with fields for `private_key` and `client_email`. Copy these into your Google Apps Script! You'll also need to get your project ID — you can find this in your Firebase project settings (under Project ID).
 
 #### Create a test document in Firestore from your script
 Now, with your service account client email address `email` and private key `key`, we will create a Firestore document with a field `name` with value `test!`. You will need your project ID to do this (we'll assume you've stored the ID in a variable called `projectId`).
