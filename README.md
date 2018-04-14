@@ -42,4 +42,4 @@ FirestoreApp.updateDocument("FirstCollection/FirstDocument", data, email, key, p
 ## Contributions
 Contributions are welcome — send a pull request! This library is a work in progress. See [here](https://github.com/grahamearley/FirestoreGoogleAppsScript/blob/master/CONTRIBUTING.md) for more information on contributing.
 
-If you want to view the source code directly on Google Apps Script, where you can make a copy for yourself to edit, click (here)[https://script.google.com/d/1VUSl4b1r1eoNcRWotZM3e87ygkxvXltOgyDZhixqncz9lQ3MjfT1iKFw/edit?usp=sharing]. 
+If you want to view the source code directly on Google Apps Script, where you can make a copy for yourself to edit, click [here](https://script.google.com/d/1VUSl4b1r1eoNcRWotZM3e87ygkxvXltOgyDZhixqncz9lQ3MjfT1iKFw/edit?usp=sharing). 
