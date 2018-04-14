@@ -44,12 +44,50 @@ function getPage_(path, projectId, authToken, pageToken) {
  */
 function getDocumentFields_(path, authToken, projectId) {
     const doc = get_(path, authToken, projectId);
+    checkForError_(doc);
 
     if (!doc["fields"]) {
         throw new Error("No document with `fields` found at path " + path);
     }
 
     return getFieldsFromFirestoreDocument_(doc);
+}
+
+/**
+ * Get a list of the JSON responses received for getting documents from a collection.
+ *
+ *  The items returned by this function are formatted as Firestore documents (with
+ *  types). This is a helper method, not meant to return documents to a user of the
+ *  library.
+ *
+ * @param {string} pathToCollection the path to the collection
+ * @param {string} authToken an authentication token for reading from Firestore
+ * @param {string} projectId the Firestore project ID
+ * @return {object} an array of Firestore document objects
+ */
+function getDocumentResponsesFromCollection_(pathToCollection, authToken, projectId) {
+    const initialResponse = get_(pathToCollection, authToken, projectId);
+    checkForError_(initialResponse);
+
+    if (!initialResponse["documents"]) {
+        return [];
+    }
+
+    const documentResponses = initialResponse["documents"];
+
+    // Get all pages of results if there are multiple
+    var pageResponse = initialResponse;
+    var pageToken = pageResponse["nextPageToken"];
+    while (pageToken) {
+        pageResponse = getPage_(pathToCollection, projectId, authToken, pageToken);
+        pageToken = pageResponse["nextPageToken"];
+
+        if (pageResponse["documents"]) {
+            addAll_(documentResponses, pageResponse["documents"]);
+        }
+    }
+
+    return documentResponses
 }
 
 /**
@@ -61,36 +99,40 @@ function getDocumentFields_(path, authToken, projectId) {
  * @return {object} an array of IDs of the documents in the collection
  */
 function getDocumentIds_(pathToCollection, authToken, projectId) {
-    const initialResponse = get_(pathToCollection, authToken, projectId);
-    checkForError_(initialResponse);
-
-    if (!initialResponse["documents"]) {
-        return [];
-    }
-
-    const documents = initialResponse["documents"];
-
-    // Get all pages of results if there are multiple
-    var pageResponse = initialResponse;
-    var pageToken = pageResponse["nextPageToken"];
-    while (pageToken) {
-        pageResponse = getPage_(pathToCollection, authToken, projectId, pageToken);
-        pageToken = pageResponse["nextPageToken"];
-
-        if (pageResponse["documents"]) {
-            addAll_(documents, pageResponse["documents"]);
-        }
-    }
+    const documentResponses = getDocumentResponsesFromCollection_(pathToCollection, authToken, projectId);
 
     const ids = [];
 
     // Create ID list from documents
-    for (var i = 0; i < documents.length; i++) {
-        var document = documents[i];
+    for (var i = 0; i < documentResponses.length; i++) {
+        var document = documentResponses[i];
         var path = document["name"];
         var id = getIdFromPath_(path);
         ids.push(id)
     }
 
     return ids;
+}
+
+/**
+ * Get a list of all documents (in field-value JSON format) in a collection.
+ *
+ * @param {string} pathToCollection the path to the collection
+ * @param {string} authToken an authentication token for reading from Firestore
+ * @param {string} projectId the Firestore project ID
+ * @return {object} an array of the documents in the collection
+ */
+function getDocuments_(pathToCollection, authToken, projectId) {
+    const documentResponses = getDocumentResponsesFromCollection_(pathToCollection, authToken, projectId);
+
+    const documents = [];
+
+    // Create ID list from documents
+    for (var i = 0; i < documentResponses.length; i++) {
+        var documentResponse = documentResponses[i];
+        var document = getFieldsFromFirestoreDocument_(documentResponse);
+        documents.push(document)
+    }
+
+    return documents;
 }

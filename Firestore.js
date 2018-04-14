@@ -71,6 +71,16 @@ Firestore = function(email, key, projectId) {
     };
 
     /**
+     * Get a list of all documents (in field-value JSON format) in a collection.
+     *
+     * @param {string} pathToCollection the path to the collection
+     * @return {object} an array of the documents in the collection
+     */
+    this.getDocuments = function(pathToCollection) {
+        return getDocuments_(pathToCollection, authToken, projectId);
+    };
+
+    /**
      * Get fields from a document.
      *
      * @param {string} path the path to the document
