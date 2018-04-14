@@ -54,7 +54,7 @@ Firestore = function(email, key, projectId) {
      * @param {string} path the path to the document or collection to get
      * @return {object} the JSON response from the GET request
      */
-    this.get = function(path) { // todo: separate functions for getting documents, collections.
+    this.get = function(path) {
         return get_(path, authToken, projectId);
     };
 
