@@ -10,18 +10,20 @@ In the Google online script editor, select the `Resources` menu item and choose 
 
 
 ## Quick start with a service account
-Follow [these instructions](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) (just the "Creating a service account" section) to obtain a service account email address and private key. Ensure you have given the account full read/write access to the `https://www.googleapis.com/auth/datastore` scope.
+Follow [these instructions](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) (just the "Creating a service account" section) to obtain a service account email address and private key. Ensure you have given the account full read/write access to the Datastore scope. You can do this in the "Create a service account" window by selecting "Datastore" in the "Role" dropdown and choosing "Cloud Datastore Owner."
 
-Now, with your service account email address `email` and private key `key`, we will create a document with a field `name` with value `test!`. You will need your project ID to do this (we'll assume you've stored the ID in a variable called `projectId`).
+After following these instructions, you'll have a JSON file with fields for `private_key` and `client_email`. Copy these into your Google Apps Script!
 
-We encode these fields as a JSON object:
+Now, with your service account client email address `email` and private key `key`, we will create a Firestore document with a field `name` with value `test!`. You will need your project ID to do this (we'll assume you've stored the ID in a variable called `projectId`).
+
+Let's encode these fields as a JSON object:
 ```javascript
 const data = {
   "name": "test!"
 }
 ```
 
-Now, we can create a document called `FirstDocument` at a  collection called "FirstCollection":
+Now, we can create a document called `FirstDocument` at a  collection called `FirstCollection`:
 ```javascript
 FirestoreApp.createDocumentWithId("FirstCollection", "FirstDocument", data, email, key, projectId)
 ```
