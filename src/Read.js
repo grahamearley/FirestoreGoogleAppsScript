@@ -4,26 +4,23 @@
  *  returns the first page.
  *
  * @param {string} path the path to the document or collection to get
- * @param {string} email the user email address (for authentication)
- * @param {string} key the user private key (for authentication)
+ * @param {string} authToken an authentication token for reading from Firestore
  * @param {string} projectId the Firestore project ID
  * @return {object} the JSON response from the GET request
  */
-function get(path, email, key, projectId) {
-    return getPage_(path, email, key, projectId)
+function get_(path, authToken, projectId) {
+    return getPage_(path, projectId, authToken, null);
 }
 
 /**
  * Get a page of results from the given path. If null pageToken
  *  is supplied, returns first page.
  */
-function getPage_(path, email, key, projectId, pageToken) {
-    const token = getAuthToken_(email, key);
-
+function getPage_(path, projectId, authToken, pageToken) {
     var baseUrl = "https://firestore.googleapis.com/v1beta1/projects/" + projectId + "/databases/(default)/documents/" + path;
     const options = {
         'muteHttpExceptions': true,
-        'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + token}
+        'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + authToken}
     };
 
     if (pageToken) {
@@ -41,32 +38,30 @@ function getPage_(path, email, key, projectId, pageToken) {
  * Get fields from a document.
  *
  * @param {string} path the path to the document
- * @param {string} email the user email address (for authentication)
- * @param {string} key the user private key (for authentication)
+ * @param {string} authToken an authentication token for reading from Firestore
  * @param {string} projectId the Firestore project ID
  * @return {object} an object mapping the document's fields to their values
  */
-function getDocumentFields(path, email, key, projectId) {
-    const doc = get(path, email, key, projectId);
+function getDocumentFields_(path, authToken, projectId) {
+    const doc = get_(path, authToken, projectId);
 
     if (!doc["fields"]) {
         throw new Error("No document with `fields` found at path " + path);
     }
 
-    return getFieldsFromFirestoreDocument(doc);
+    return getFieldsFromFirestoreDocument_(doc);
 }
 
 /**
  * Get a list of all IDs of the documents in a collection.
  *
  * @param {string} pathToCollection the path to the collection
- * @param {string} email the user email address (for authentication)
- * @param {string} key the user private key (for authentication)
+ * @param {string} authToken an authentication token for reading from Firestore
  * @param {string} projectId the Firestore project ID
  * @return {object} an array of IDs of the documents in the collection
  */
-function getDocumentIds(pathToCollection, email, key, projectId) {
-    const initialResponse = get(pathToCollection, email, key, projectId);
+function getDocumentIds_(pathToCollection, authToken, projectId) {
+    const initialResponse = get_(pathToCollection, authToken, projectId);
     checkForError_(initialResponse);
 
     if (!initialResponse["documents"]) {
@@ -79,7 +74,7 @@ function getDocumentIds(pathToCollection, email, key, projectId) {
     var pageResponse = initialResponse;
     var pageToken = pageResponse["nextPageToken"];
     while (pageToken) {
-        pageResponse = getPage_(pathToCollection, email, key, projectId, pageToken);
+        pageResponse = getPage_(pathToCollection, authToken, projectId, pageToken);
         pageToken = pageResponse["nextPageToken"];
 
         if (pageResponse["documents"]) {

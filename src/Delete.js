@@ -3,19 +3,16 @@
  * Note: this deletes ONLY this document, and not any subcollections.
  *
  * @param {string} pathToDocument the path to the document to delete
- * @param {string} email the user email address (for authentication)
- * @param {string} key the user private key (for authentication)
+ * @param {string} authToken an authentication token for deleting from Firestore
  * @param {string} projectId the Firestore project ID
  * @return {object} the JSON response from the DELETE request
  */
-function deleteDocument(pathToDocument, email, key, projectId) {
-    const token = getAuthToken_(email, key);
-
+function deleteDocument_(pathToDocument, authToken, projectId) {
     const baseUrl = "https://firestore.googleapis.com/v1beta1/projects/" + projectId + "/databases/(default)/documents/" + pathToDocument;
     const options = {
         'method': 'delete',
         'muteHttpExceptions': true,
-        'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + token}
+        'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + authToken}
     };
 
     var responseObj = getObjectFromResponse_(UrlFetchApp.fetch(baseUrl, options));
