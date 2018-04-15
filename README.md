@@ -44,6 +44,8 @@ firestore.updateDocument("FirstCollection/FirstDocument", data)
 
 **Note:** Although you can call `updateDocument` without using `createDocument` to create the document, any documents in your path will not be created and thus you can only access the document by using the path explicitly.
 
+See other library methods [in the wiki](https://github.com/grahamearley/FirestoreGoogleAppsScript/wiki/Firestore-Method-Documentation).
+
 ## Contributions
 Contributions are welcome — send a pull request! This library is a work in progress. See [here](https://github.com/grahamearley/FirestoreGoogleAppsScript/blob/master/CONTRIBUTING.md) for more information on contributing.
 
