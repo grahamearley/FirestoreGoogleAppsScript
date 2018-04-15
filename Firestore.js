@@ -59,18 +59,6 @@ Firestore = function(email, key, projectId) {
     };
 
     /**
-     * Get the Firestore document or collection at a given path. If the collection
-     *  contains enough IDs to return a paginated result, this method only
-     *  returns the first page.
-     *
-     * @param {string} path the path to the document or collection to get
-     * @return {object} the JSON response from the GET request
-     */
-    this.get = function(path) {
-        return get_(path, authToken, projectId);
-    };
-
-    /**
      * Get a list of all documents (in field-value JSON format) in a collection.
      *
      * @param {string} pathToCollection the path to the collection
