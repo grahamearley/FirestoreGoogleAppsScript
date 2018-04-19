@@ -13,9 +13,11 @@ In the Google online script editor, select the `Resources` menu item and choose 
 #### Creating a service account
 The easiest way to use this library is to create a Google Service Account for your application and give it read/write access to your datastore. Giving a service account access to your datastore is like giving access to a user's account, but this account is strictly used by your script, not by a person.
 
+In the [Firebase admin console](https://console.firebase.google.com) create a new Firestore project with the default security settings. Open the project and in the settings menu (cog) of the  project overview menu go to the "User and permissions", from here a service account can be generated if one doesn't already exist. 
+
 Follow [these instructions](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) (just the "Creating a service account" section) to obtain a service account email address and private key. Ensure you have given the account full read/write access to the Datastore scope. You can do this in the "Create a service account" window by selecting "Datastore" in the "Role" dropdown and choosing "Cloud Datastore Owner."
 
-After following these instructions, you'll have a JSON file with fields for `private_key` and `client_email`. Copy these into your Google Apps Script! You'll also need to get your project ID — you can find this in your Firebase project settings (under Project ID).
+After following these instructions, you'll have a JSON file with fields for `private_key` ,  `client_email` and `project_id`. Copy these into your Google Apps Script! You'll also need to get your project ID — you can find this in the JSON file or your Firebase project settings (under Project ID).
 
 #### Create a test document in Firestore from your script
 Now, with your service account client email address `email`, private key `key`, and project ID `projectId`, we will authenticate with Firestore to get our `Firestore` object. To do this, get the `Firestore` object from the library:
