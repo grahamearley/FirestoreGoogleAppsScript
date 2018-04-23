@@ -35,6 +35,12 @@ function getFieldsFromFirestoreDocument_(firestoreDoc) {
     const keys = Object.keys(fields);
     const object = {};
 
+    var path = firestoreDoc["name"];
+    if (path) {
+      var id = getIdFromPath_(path);
+      object["id"] = id;
+    }
+
     for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
         var firestoreValue = fields[key];
