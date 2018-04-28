@@ -35,25 +35,6 @@ function getPage_(path, projectId, authToken, pageToken) {
 }
 
 /**
- * Get fields from a document.
- *
- * @param {string} path the path to the document
- * @param {string} authToken an authentication token for reading from Firestore
- * @param {string} projectId the Firestore project ID
- * @return {object} an object mapping the document's fields to their values
- */
-function getDocumentFields_(path, authToken, projectId) {
-    const doc = get_(path, authToken, projectId);
-    checkForError_(doc);
-
-    if (!doc["fields"]) {
-        throw new Error("No document with `fields` found at path " + path);
-    }
-
-    return getFieldsFromFirestoreDocument_(doc);
-}
-
-/**
  * Get a list of the JSON responses received for getting documents from a collection.
  *
  *  The items returned by this function are formatted as Firestore documents (with
@@ -115,7 +96,7 @@ function getDocumentIds_(pathToCollection, authToken, projectId) {
 }
 
 /**
- * Get a list of all documents (in field-value JSON format) in a collection.
+ * Get a list of all documents in a collection.
  *
  * @param {string} pathToCollection the path to the collection
  * @param {string} authToken an authentication token for reading from Firestore
@@ -127,12 +108,44 @@ function getDocuments_(pathToCollection, authToken, projectId) {
 
     const documents = [];
 
-    // Create ID list from documents
     for (var i = 0; i < documentResponses.length; i++) {
         var documentResponse = documentResponses[i];
-        var document = getFieldsFromFirestoreDocument_(documentResponse);
+        var document = unwrapDocumentFields_(documentResponse);
         documents.push(document)
     }
 
     return documents;
+}
+
+/**
+ * Get a document.
+ *
+ * @param {string} path the path to the document
+ * @param {string} authToken an authentication token for reading from Firestore
+ * @param {string} projectId the Firestore project ID
+ * @return {object} an object mapping the document's fields to their values
+ */
+function getDocument_(path, authToken, projectId) {
+    const doc = get_(path, authToken, projectId);
+    checkForError_(doc);
+
+    if (!doc["fields"]) {
+        throw new Error("No document with `fields` found at path " + path);
+    }
+
+    doc.fields = getFieldsFromFirestoreDocument_(doc);
+
+    return doc;
+}
+
+/**
+ * Unwrap the given document response's fields.
+ *
+ * @param docResponse the document response
+ * @return the document response, with unwrapped fields
+ * @private
+ */
+function unwrapDocumentFields_(docResponse) {
+    docResponse.fields = getFieldsFromFirestoreDocument_(docResponse);
+    return docResponse
 }
