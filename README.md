@@ -13,9 +13,14 @@ In the Google online script editor, select the `Resources` menu item and choose 
 #### Creating a service account
 The easiest way to use this library is to create a Google Service Account for your application and give it read/write access to your datastore. Giving a service account access to your datastore is like giving access to a user's account, but this account is strictly used by your script, not by a person.
 
-Follow [these instructions](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) (just the "Creating a service account" section) to obtain a service account email address and private key. Ensure you have given the account full read/write access to the Datastore scope. You can do this in the "Create a service account" window by selecting "Datastore" in the "Role" dropdown and choosing "Cloud Datastore Owner."
+If you don't already have a Firestore project you want to use, create one at the [Firebase admin console](https://console.firebase.google.com).
 
-After following these instructions, you'll have a JSON file with fields for `private_key` and `client_email`. Copy these into your Google Apps Script! You'll also need to get your project ID — you can find this in your Firebase project settings (under Project ID).
+To make a service account,
+1. Open the [Google Service Accounts page by clicking here](https://console.developers.google.com/permissions/serviceaccounts). 
+2. Select your Firestore project, and then click "Create Service Account." 
+3. For your service account's role, choose `Datastore > Cloud Datastore Owner`. 
+4. Check the "Furnish a new private key" box and select JSON as your key type. 
+5. When you press "Create," your browser will download a `.json` file with your private key (`private_key`), service account email (`client_email`), and project ID (`project_id`). Copy these values into your Google Apps Script — you'll need them to authenticate with Firestore.
 
 #### Create a test document in Firestore from your script
 Now, with your service account client email address `email`, private key `key`, and project ID `projectId`, we will authenticate with Firestore to get our `Firestore` object. To do this, get the `Firestore` object from the library:
