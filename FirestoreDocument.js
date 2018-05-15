@@ -1,4 +1,4 @@
-/* globals isInt_ */
+/* globals isInt_, regexPath_, regexBinary_ */
 
 /**
  * Create a Firestore documents with the corresponding fields.
@@ -66,38 +66,77 @@ function wrapValue_ (value) {
 
 function unwrapValue_ (value) {
   var type = Object.keys(value)[0]
+  value = value[type]
   switch (type) {
+    case 'referenceValue':
+      // TODO: Allow possibility to retrieve document from this reference
+      // return value.match(/\/documents\/(.*)/)[1];
+      // fall through
+    case 'bytesValue':
     case 'stringValue':
     case 'booleanValue':
     case 'integerValue':
     case 'doubleValue':
-      return value[type]
-    case 'nullValue':
-      return null
+      return value
+    case 'geoPointValue':
+      value = createFirestoreDocument_(value)
+      // Transform coordinates as mapValue object type
+      // fall through
     case 'mapValue':
-      return getFieldsFromFirestoreDocument_(value[type])
+      return getFieldsFromFirestoreDocument_(value)
     case 'arrayValue':
-      return unwrapArray_(value[type]['values'])
-    default:
-      // error
+      return unwrapArray_(value['values'])
+    case 'timestampValue':
+      return new Date(value)
+    case 'nullValue':
+    default: // error
       return null
   }
 }
 
 function wrapString_ (string) {
+  if (regexPath_.test(string)) {
+    return wrapRef_(string)
+  }
+
+  // Not guaranteed to catch all
+  if (regexBinary_.test(string)) {
+    return wrapBytes_(string)
+  }
+
   return {'stringValue': string}
 }
 
 function wrapObject_ (object) {
   if (!object) {
-    return {'nullValue': null}
+    return wrapNull_()
   }
 
   if (Array.isArray(object)) {
     return wrapArray_(object)
   }
 
+  if (object instanceof Date) {
+    return wrapDate_(object)
+  }
+
+  if (Object.keys(object).length === 2 && 'latitude' in object && 'longitude' in object) {
+    return wrapLatLong_(object)
+  }
+
   return {'mapValue': createFirestoreDocument_(object)}
+}
+
+function wrapNull_ () {
+  return {'nullValue': null}
+}
+
+function wrapBytes_ (bytes) {
+  return {'bytesValue': bytes}
+}
+
+function wrapRef_ (ref) {
+  return {'referenceValue': ref}
 }
 
 function wrapNumber_ (num) {
@@ -118,6 +157,14 @@ function wrapDouble_ (double) {
 
 function wrapBoolean_ (boolean) {
   return {'booleanValue': boolean}
+}
+
+function wrapDate_ (date) {
+  return {'timestampValue': date}
+}
+
+function wrapLatLong_ (latLong) {
+  return {'geoPointValue': latLong}
 }
 
 function wrapArray_ (array) {

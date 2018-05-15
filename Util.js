@@ -1,6 +1,9 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
 /* globals Utilities */
 
+var regexPath_ = /^projects\/.+?\/databases\/\(default\)\/documents\/.+\/.+$/
+var regexBinary_ = /[\x00-\x08\x0E-\x1F]/ // eslint-disable-line no-control-regex
+
 // Assumes n is a Number.
 function isInt_ (n) {
   return n % 1 === 0
