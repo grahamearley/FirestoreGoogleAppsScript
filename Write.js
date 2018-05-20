@@ -1,3 +1,6 @@
+/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
+/* globals UrlFetchApp, checkForError_, createFirestoreDocument_, getObjectFromResponse_, removeTrailingSlash_ */
+
 /**
  * Create a document with the given ID and fields.
  *
@@ -8,28 +11,28 @@
  * @param {string} projectId the Firestore project ID
  * @return {object} the Document object written to Firestore
  */
-function createDocumentWithId_(path, documentId, fields, authToken, projectId) {
-    const firestoreObject = createFirestoreDocument_(fields);
+function createDocumentWithId_ (path, documentId, fields, authToken, projectId) {
+  const firestoreObject = createFirestoreDocument_(fields)
 
-    const pathWithNoTrailingSlash = removeTrailingSlash_(path);
-    var baseUrl = "https://firestore.googleapis.com/v1beta1/projects/" + projectId + "/databases/(default)/documents/" + pathWithNoTrailingSlash;
-    if (documentId) {
-        baseUrl += "?documentId=" + documentId;
-    }
+  const pathWithNoTrailingSlash = removeTrailingSlash_(path)
+  var baseUrl = 'https://firestore.googleapis.com/v1beta1/projects/' + projectId + '/databases/(default)/documents/' + pathWithNoTrailingSlash
+  if (documentId) {
+    baseUrl += '?documentId=' + documentId
+  }
 
-    const options = {
-        'method': 'post',
-        'muteHttpExceptions': true,
-        'payload': JSON.stringify(firestoreObject),
-        'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + authToken}
-    };
+  const options = {
+    'method': 'post',
+    'muteHttpExceptions': true,
+    'payload': JSON.stringify(firestoreObject),
+    'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + authToken}
+  }
 
-    const response = UrlFetchApp.fetch(baseUrl, options);
-    const responseObj = getObjectFromResponse_(response);
+  const response = UrlFetchApp.fetch(baseUrl, options)
+  const responseObj = getObjectFromResponse_(response)
 
-    checkForError_(responseObj);
+  checkForError_(responseObj)
 
-    return responseObj;
+  return responseObj
 }
 
 /**
@@ -41,8 +44,8 @@ function createDocumentWithId_(path, documentId, fields, authToken, projectId) {
  * @param {string} projectId the Firestore project ID
  * @return {object} the Document object written to Firestore
  */
-function createDocument_(path, fields, authToken, projectId) {
-    return createDocumentWithId_(path, null, fields, authToken, projectId);
+function createDocument_ (path, fields, authToken, projectId) {
+  return createDocumentWithId_(path, null, fields, authToken, projectId)
 }
 
 /**
@@ -54,20 +57,20 @@ function createDocument_(path, fields, authToken, projectId) {
  * @param {string} projectId the Firestore project ID
  * @return {object} the Document object written to Firestore
  */
-function updateDocument_(path, fields, authToken, projectId) {
-    const firestoreObject = createFirestoreDocument_(fields);
+function updateDocument_ (path, fields, authToken, projectId) {
+  const firestoreObject = createFirestoreDocument_(fields)
 
-    const baseUrl = "https://firestore.googleapis.com/v1beta1/projects/" + projectId + "/databases/(default)/documents/" + path;
-    const options = {
-        'method': 'patch',
-        'muteHttpExceptions': true,
-        'payload': JSON.stringify(firestoreObject),
-        'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + authToken}
-    };
+  const baseUrl = 'https://firestore.googleapis.com/v1beta1/projects/' + projectId + '/databases/(default)/documents/' + path
+  const options = {
+    'method': 'patch',
+    'muteHttpExceptions': true,
+    'payload': JSON.stringify(firestoreObject),
+    'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + authToken}
+  }
 
-    const response = UrlFetchApp.fetch(baseUrl, options);
-    const responseObj = getObjectFromResponse_(response);
-    checkForError_(responseObj);
+  const response = UrlFetchApp.fetch(baseUrl, options)
+  const responseObj = getObjectFromResponse_(response)
+  checkForError_(responseObj)
 
-    return responseObj;
+  return responseObj
 }
