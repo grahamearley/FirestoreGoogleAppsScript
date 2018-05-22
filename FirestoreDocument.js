@@ -39,16 +39,14 @@ function getFieldsFromFirestoreDocument_ (firestoreDoc) {
 
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i]
-    var firestoreValue = fields[key]
-
-    object[key] = unwrapValue_(firestoreValue)
+    object[key] = unwrapValue_(fields[key])
   }
 
   return object
 }
 
 function wrapValue_ (value) {
-  var type = typeof (value)
+  const type = typeof (value)
   switch (type) {
     case 'string':
       return wrapString_(value)
@@ -65,19 +63,17 @@ function wrapValue_ (value) {
 }
 
 function unwrapValue_ (value) {
-  var type = Object.keys(value)[0]
+  const type = Object.keys(value)[0]
   value = value[type]
   switch (type) {
     case 'referenceValue':
-      // TODO: Allow possibility to retrieve document from this reference
-      // return value.match(/\/documents\/(.*)/)[1];
-      // fall through
     case 'bytesValue':
     case 'stringValue':
     case 'booleanValue':
-    case 'integerValue':
     case 'doubleValue':
       return value
+    case 'integerValue':
+      return parseInt(value)
     case 'geoPointValue':
       value = createFirestoreDocument_(value)
       // Transform coordinates as mapValue object type
@@ -95,11 +91,12 @@ function unwrapValue_ (value) {
 }
 
 function wrapString_ (string) {
+  // Test for root path reference inclusion (see Util.js)
   if (regexPath_.test(string)) {
     return wrapRef_(string)
   }
 
-  // Not guaranteed to catch all
+  // Test for binary data in string (see Util.js)
   if (regexBinary_.test(string)) {
     return wrapBytes_(string)
   }
@@ -172,8 +169,7 @@ function wrapArray_ (array) {
 
   for (var i = 0; i < array.length; i++) {
     var value = array[i]
-    var wrappedValue = wrapValue_(value)
-    wrappedArray.push(wrappedValue)
+    wrappedArray.push(wrapValue_(value))
   }
 
   return {'arrayValue': {'values': wrappedArray}}
@@ -188,8 +184,7 @@ function unwrapArray_ (wrappedArray) {
 
   for (var i = 0; i < wrappedArray.length; i++) {
     var wrappedValue = wrappedArray[i]
-    var unwrappedValue = unwrapValue_(wrappedValue)
-    array.push(unwrappedValue)
+    array.push(unwrapValue_(wrappedValue))
   }
 
   return array
