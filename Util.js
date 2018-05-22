@@ -12,6 +12,10 @@ function isInt_ (n) {
   return n % 1 === 0
 }
 
+function IsNumeric_ (val) {
+  return Number(parseFloat(val)) === val
+}
+
 function base64EncodeSafe_ (string) {
   const encoded = Utilities.base64EncodeWebSafe(string)
   return encoded.replace(/=/g, '')
@@ -34,6 +38,9 @@ function getObjectFromResponse_ (response) {
 function checkForError_ (responseObj) {
   if (responseObj['error']) {
     throw new Error(responseObj['error']['message'])
+  }
+  if (Array.isArray(responseObj) && responseObj.length && responseObj[0]['error']) {
+    throw new Error(responseObj[0]['error']['message'])
   }
 }
 
