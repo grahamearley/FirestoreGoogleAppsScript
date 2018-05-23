@@ -2,10 +2,10 @@
 /* globals Utilities */
 
 // RegEx test for root path references
-const regexPath_ = /^projects\/.+?\/databases\/\(default\)\/documents\/.+\/.+$/
+var regexPath_ = /^projects\/.+?\/databases\/\(default\)\/documents\/.+\/.+$/
 // RegEx test for testing for binary data by checking for non-printable characters.
 // Parsing strings for binary data is completely dependent on the data being sent over.
-const regexBinary_ = /[\x00-\x08\x0E-\x1F]/ // eslint-disable-line no-control-regex
+var regexBinary_ = /[\x00-\x08\x0E-\x1F]/ // eslint-disable-line no-control-regex
 
 // Assumes n is a Number.
 function isInt_ (n) {
