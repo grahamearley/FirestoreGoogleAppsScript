@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_|Fire|get" }] */
-/* globals createDocument_, createDocumentWithId_, deleteDocument_, getAuthToken_, getDocument_, getDocuments_, getDocumentIds_, updateDocument_ */
+/* globals createDocument_, createDocumentWithId_, deleteDocument_, getAuthToken_, getDocument_, getDocuments_, getDocumentIds_, query_, updateDocument_ */
 
 /**
  * Get an object that acts as an authenticated interface with a Firestore project.
@@ -25,7 +25,7 @@ var Firestore = function (email, key, projectId) {
   /**
    * The authentication token used for accessing Firestore.
    */
-  const authToken = getAuthToken_(email, key)
+  const authToken = getAuthToken_(email, key, 'https://www.googleapis.com/oauth2/v4/token/')
 
   /**
    * Create a document with the given ID and fields.
@@ -100,10 +100,10 @@ var Firestore = function (email, key, projectId) {
    * @return {object} the JSON response from the GET request
    */
   this.query = function () {
-    const from = Array.prototype.slice.call(arguments);
-    return query_(from, authToken, projectId);
+    const from = Array.prototype.slice.call(arguments)
+    return query_(from, authToken, projectId)
   }
-  
+
   /**
    * Delete the Firestore document at the given path.
    * Note: this deletes ONLY this document, and not any subcollections.

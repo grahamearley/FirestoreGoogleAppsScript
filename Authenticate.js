@@ -1,25 +1,34 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* global UrlFetchApp, Utilities, base64EncodeSafe_ */
+/* global Utilities, base64EncodeSafe_, fetchObject_ */
 
-// Auth token is formatted according to:
-//  https://developers.google.com/identity/protocols/OAuth2ServiceAccount#authorizingrequests
-
-function getAuthToken_ (email, key) {
-  const jwt = createJwt_(email, key)
+/**
+ * Auth token is formatted to {@link https://developers.google.com/identity/protocols/OAuth2ServiceAccount#authorizingrequests}
+ *
+ * @private
+ */
+function getAuthToken_ (email, key, authUrl) {
+  const jwt = createJwt_(email, key, authUrl)
 
   var options = {
     'method': 'post',
-    'payload': 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + jwt,
+    'payload': 'grant_type=' + decodeURIComponent('urn:ietf:params:oauth:grant-type:jwt-bearer') + '&assertion=' + jwt,
     'muteHttpExceptions': true
   }
 
-  const response = UrlFetchApp.fetch('https://www.googleapis.com/oauth2/v4/token/', options)
-  const responseObj = JSON.parse(response.getContentText())
-
+  const responseObj = fetchObject_(authUrl, options)
   return responseObj['access_token']
 }
 
-function createJwt_ (email, key) {
+/**
+ * Creates the JSON Web Token for OAuth 2.0
+ *
+ * @private
+ * @param email
+ * @param key
+ * @param authUrl
+ * @returns {string} JWT to utilize
+ */
+function createJwt_ (email, key, authUrl) {
   const jwtHeader = {'alg': 'RS256', 'typ': 'JWT'}
 
   const now = new Date()
@@ -31,7 +40,7 @@ function createJwt_ (email, key) {
   const jwtClaim = {
     'iss': email,
     'scope': 'https://www.googleapis.com/auth/datastore',
-    'aud': 'https://www.googleapis.com/oauth2/v4/token/',
+    'aud': authUrl,
     'exp': oneHourFromNowSeconds,
     'iat': nowSeconds
   }
@@ -44,7 +53,5 @@ function createJwt_ (email, key) {
   const signature = Utilities.computeRsaSha256Signature(signatureInput, key)
   const encodedSignature = base64EncodeSafe_(signature)
 
-  const jwt = signatureInput + '.' + encodedSignature
-
-  return jwt
+  return signatureInput + '.' + encodedSignature
 }

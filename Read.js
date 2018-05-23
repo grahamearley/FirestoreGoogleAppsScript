@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals UrlFetchApp, FirestoreQuery_, addAll_, checkForError_, getFieldsFromFirestoreDocument_, getIdFromPath_, getObjectFromResponse_ */
+/* globals FirestoreQuery_, addAll_, getFieldsFromFirestoreDocument_, getIdFromPath_, fetchObject_ */
 
 /**
  * Get the Firestore document or collection at a given path.
@@ -39,10 +39,7 @@ function getPage_ (path, projectId, authToken, pageToken) {
     options['pageToken'] = pageToken
   }
 
-  var responseObj = getObjectFromResponse_(UrlFetchApp.fetch(baseUrl, options))
-  checkForError_(responseObj)
-
-  return responseObj
+  return fetchObject_(baseUrl, options)
 }
 
 /**
@@ -164,8 +161,7 @@ function query_ (from, authToken, projectId) {
     options.payload = JSON.stringify({
       structuredQuery: query
     })
-    const responseObj = getObjectFromResponse_(UrlFetchApp.fetch(baseUrl, options))
-    checkForError_(responseObj)
+    const responseObj = fetchObject_(baseUrl, options)
 
     const documents = responseObj.reduce(function (docs, fireDoc) {
       if (fireDoc.document) {
