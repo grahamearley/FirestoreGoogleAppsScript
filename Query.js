@@ -12,8 +12,9 @@
 
 /**
  * An object that acts as a Query to be a structured query.
+ * Chain methods to update query. Must call .execute to send request.
  *
- * @class
+ * @constructor
  * @private
  * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery Firestore Structured Query}
  * @param {string[]} from the base collection to query

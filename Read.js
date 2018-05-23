@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals FirestoreQuery_, addAll_, getFieldsFromFirestoreDocument_, getIdFromPath_, fetchObject_ */
+/* globals FirestoreQuery_, getFieldsFromFirestoreDocument_, getIdFromPath_, unwrapDocumentFields_ */
 
 /**
  * Get the Firestore document or collection at a given path.
@@ -8,93 +8,70 @@
  *
  * @private
  * @param {string} path the path to the document or collection to get
- * @param {string} authToken an authentication token for reading from Firestore
- * @param {string} projectId the Firestore project ID
+ * @param {string} request the Firestore Request object to manipulate
  * @return {object} the JSON response from the GET request
  */
-function get_ (path, authToken, projectId) {
-  return getPage_(path, projectId, authToken)
+function get_ (path, request) {
+  return getPage_(path, null, request)
 }
 
 /**
- * Get a page of results from the given path. If null pageToken
- *  is supplied, returns first page.
+ * Get a page of results from the given path.
+ *  If null pageToken is supplied, returns first page.
  *
  * @private
  * @param {string} path the path to the document or collection to get
- * @param {string} authToken an authentication token for reading from Firestore
- * @param {string} projectId the Firestore project ID
+ * @param {string} request the Firestore Request object to manipulate
  * @param {string} pageToken if defined, is utilized for retrieving subsequent pages
  * @return {object} the JSON response from the GET request
  */
-function getPage_ (path, projectId, authToken, pageToken) {
-  var baseUrl = 'https://firestore.googleapis.com/v1beta1/projects/' + projectId + '/databases/(default)/documents/' + path
-  const options = {
-    'muteHttpExceptions': true,
-    'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + authToken}
-  }
-
+function getPage_ (path, pageToken, request) {
   if (pageToken) {
-    baseUrl += '?pageToken=' + pageToken
-    options['pageToken'] = pageToken
+    request.addParam('pageToken', pageToken)
   }
 
-  return fetchObject_(baseUrl, options)
+  return request.fetch(path)
 }
 
 /**
  * Get a list of the JSON responses received for getting documents from a collection.
- *
- *  The items returned by this function are formatted as Firestore documents (with
- *  types). This is a helper method, not meant to return documents to a user of the
- *  library.
+ *  The items returned by this function are formatted as Firestore documents (with types).
  *
  * @private
- * @param {string} pathToCollection the path to the collection
- * @param {string} authToken an authentication token for reading from Firestore
- * @param {string} projectId the Firestore project ID
+ * @param {string} path the path to the collection
+ * @param {string} request the Firestore Request object to manipulate
  * @return {object} an array of Firestore document objects
  */
-function getDocumentResponsesFromCollection_ (pathToCollection, authToken, projectId) {
-  const initialResponse = get_(pathToCollection, authToken, projectId)
-  const documentResponses = initialResponse['documents']
-  if (!documentResponses) {
-    return []
-  }
+function getDocumentResponsesFromCollection_ (path, request) {
+  const documents = []
+  var pageToken = null
 
-  // Get all pages of results if there are multiple
-  var pageResponse = initialResponse
-  var pageToken = pageResponse['nextPageToken']
-  while (pageToken) {
-    pageResponse = getPage_(pathToCollection, projectId, authToken, pageToken)
-    pageToken = pageResponse['nextPageToken']
-
-    if (pageResponse['documents']) {
-      addAll_(documentResponses, pageResponse['documents'])
+  do {
+    var pageResponse = getPage_(path, pageToken, request.clone())
+    pageToken = pageResponse.nextPageToken
+    if (pageResponse.documents) {
+      Array.prototype.push.apply(documents, pageResponse.documents)
     }
-  }
-  return documentResponses
+  } while (pageToken) // Get all pages of results if there are multiple
+
+  return documents
 }
 
 /**
  * Get a list of all IDs of the documents in a collection.
  *
  * @private
- * @param {string} pathToCollection the path to the collection
- * @param {string} authToken an authentication token for reading from Firestore
- * @param {string} projectId the Firestore project ID
+ * @param {string} path the path to the collection
+ * @param {string} request the Firestore Request object to manipulate
  * @return {object} an array of IDs of the documents in the collection
  */
-function getDocumentIds_ (pathToCollection, authToken, projectId) {
-  const documentResponses = getDocumentResponsesFromCollection_(pathToCollection, authToken, projectId)
+function getDocumentIds_ (path, request) {
+  const documentResponses = getDocumentResponsesFromCollection_(path, request)
   const ids = []
 
   // Create ID list from documents
   for (var i = 0; i < documentResponses.length; i++) {
-    var document = documentResponses[i]
-    var path = document['name']
-    var id = getIdFromPath_(path)
-    ids.push(id)
+    ids.push(getIdFromPath_(documentResponses[i].name))
   }
 
   return ids
@@ -104,19 +81,16 @@ function getDocumentIds_ (pathToCollection, authToken, projectId) {
  * Get a list of all documents in a collection.
  *
  * @private
- * @param {string} pathToCollection the path to the collection
- * @param {string} authToken an authentication token for reading from Firestore
- * @param {string} projectId the Firestore project ID
+ * @param {string} path the path to the collection
+ * @param {string} request the Firestore Request object to manipulate
  * @return {object} an array of the documents in the collection
  */
-function getDocuments_ (pathToCollection, authToken, projectId) {
-  const documentResponses = getDocumentResponsesFromCollection_(pathToCollection, authToken, projectId)
+function getDocuments_ (path, request) {
+  const documentResponses = getDocumentResponsesFromCollection_(path, request)
   const documents = []
 
   for (var i = 0; i < documentResponses.length; i++) {
-    var documentResponse = documentResponses[i]
-    var document = unwrapDocumentFields_(documentResponse)
-    documents.push(document)
+    documents.push(unwrapDocumentFields_(documentResponses[i]))
   }
 
   return documents
@@ -127,48 +101,34 @@ function getDocuments_ (pathToCollection, authToken, projectId) {
  *
  * @private
  * @param {string} path the path to the document
- * @param {string} authToken an authentication token for reading from Firestore
- * @param {string} projectId the Firestore project ID
+ * @param {string} request the Firestore Request object to manipulate
  * @return {object} an object mapping the document's fields to their values
  */
-function getDocument_ (path, authToken, projectId) {
-  const doc = get_(path, authToken, projectId)
+function getDocument_ (path, request) {
+  const doc = get_(path, request)
   if (!doc['fields']) {
     throw new Error('No document with `fields` found at path ' + path)
   }
-
-  doc.fields = getFieldsFromFirestoreDocument_(doc)
-  return doc
+  return unwrapDocumentFields_(doc)
 }
 /**
  * Set up a Query to receive data from a collection
  *
  * @private
  * @param {string[]} from the path to the document or collection to get
- * @param {string} authToken an authentication token for reading from Firestore
- * @param {string} projectId the Firestore project ID
- * @return {object} A FirebaseQuery object to set up the query and eventually execute
+ * @param {string} request the Firestore Request object to manipulate
+ * @return {object} A FirestoreQuery object to set up the query and eventually execute
  */
-function query_ (from, authToken, projectId) {
-  var baseUrl = 'https://firestore.googleapis.com/v1beta1/projects/' + projectId + '/databases/(default)/documents:runQuery'
-  const options = {
-    'method': 'post',
-    'muteHttpExceptions': true,
-    'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + authToken}
-  }
-
+function query_ (from, request) {
   const callback = function (query) {
-    options.payload = JSON.stringify({
+    request.post({
       structuredQuery: query
     })
-    const responseObj = fetchObject_(baseUrl, options)
+    const responseObj = request.fetch(':runQuery')
 
     const documents = responseObj.reduce(function (docs, fireDoc) {
       if (fireDoc.document) {
-        if (fireDoc.document.fields) {
-          fireDoc.document.fields = getFieldsFromFirestoreDocument_(fireDoc.document)
-        }
-        docs.push(fireDoc.document)
+        docs.push(unwrapDocumentFields_(fireDoc.document))
       }
       return docs
     }, [])
@@ -176,16 +136,4 @@ function query_ (from, authToken, projectId) {
     return documents
   }
   return new FirestoreQuery_(from, callback)
-}
-
-/**
- * Unwrap the given document response's fields.
- *
- * @private
- * @param docResponse the document response
- * @return the document response, with unwrapped fields
- */
-function unwrapDocumentFields_ (docResponse) {
-  docResponse.fields = getFieldsFromFirestoreDocument_(docResponse)
-  return docResponse
 }

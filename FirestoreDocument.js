@@ -1,3 +1,4 @@
+/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
 /* globals isInt_, regexPath_, regexBinary_ */
 
 /**
@@ -39,6 +40,20 @@ function getFieldsFromFirestoreDocument_ (firestoreDoc) {
   }
 
   return object
+}
+
+/**
+ * Unwrap the given document response's fields.
+ *
+ * @private
+ * @param docResponse the document response
+ * @return the document response, with unwrapped fields
+ */
+function unwrapDocumentFields_ (docResponse) {
+  if (docResponse.fields) {
+    docResponse.fields = getFieldsFromFirestoreDocument_(docResponse)
+  }
+  return docResponse
 }
 
 function wrapValue_ (value) {
