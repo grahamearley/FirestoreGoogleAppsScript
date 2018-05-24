@@ -16,7 +16,7 @@ function getAuthToken_ (email, key, authUrl) {
   var options = {
     payload: 'grant_type=' + decodeURIComponent('urn:ietf:params:oauth:grant-type:jwt-bearer') + '&assertion=' + jwt
   }
-  const responseObj = new FirestoreRequest_(authUrl, null, options).post().fetch()
+  const responseObj = new FirestoreRequest_(authUrl, null, options).post()
   return responseObj.access_token
 }
 

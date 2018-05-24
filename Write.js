@@ -16,7 +16,7 @@ function createDocument_ (path, documentId, fields, request) {
   const pathWithNoTrailingSlash = removeTrailingSlash_(path)
 
   if (documentId) { request.addParam('documentId', documentId) }
-  return request.post(firestoreObject).fetch(pathWithNoTrailingSlash)
+  return request.post(pathWithNoTrailingSlash, firestoreObject)
 }
 
 /**
@@ -31,6 +31,5 @@ function createDocument_ (path, documentId, fields, request) {
 function updateDocument_ (path, fields, request) {
   const firestoreObject = createFirestoreDocument_(fields)
 
-  request.patch(firestoreObject)
-  return request.fetch(path)
+  return request.patch(path, firestoreObject)
 }

@@ -30,7 +30,7 @@ function getPage_ (path, pageToken, request) {
     request.addParam('pageToken', pageToken)
   }
 
-  return request.fetch(path)
+  return request.get(path)
 }
 
 /**
@@ -121,10 +121,9 @@ function getDocument_ (path, request) {
  */
 function query_ (from, request) {
   const callback = function (query) {
-    request.post({
+    const responseObj = request.post(':runQuery', {
       structuredQuery: query
     })
-    const responseObj = request.fetch(':runQuery')
 
     const documents = responseObj.reduce(function (docs, fireDoc) {
       if (fireDoc.document) {

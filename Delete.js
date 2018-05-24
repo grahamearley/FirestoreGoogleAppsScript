@@ -9,5 +9,5 @@
  * @return {object} the JSON response from the DELETE request
  */
 function deleteDocument_ (path, request) {
-  return request.remove().fetch(path)
+  return request.remove(path)
 }
