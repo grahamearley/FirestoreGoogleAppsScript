@@ -9,12 +9,10 @@
  */
 function createFirestoreDocument_ (fields) {
   const keys = Object.keys(fields)
-  const fieldsObj = {}
-
-  for (var i = 0; i < keys.length; i++) {
-    var key = keys[i]
-    fieldsObj[key] = wrapValue_(fields[key])
-  }
+  const fieldsObj = keys.reduce(function (o, key) {
+    o[key] = wrapValue_(fields[key])
+    return o
+  }, {})
 
   return {fields: fieldsObj}
 }
@@ -32,12 +30,10 @@ function getFieldsFromFirestoreDocument_ (firestoreDoc) {
 
   const fields = firestoreDoc['fields']
   const keys = Object.keys(fields)
-  const object = {}
-
-  for (var i = 0; i < keys.length; i++) {
-    var key = keys[i]
-    object[key] = unwrapValue_(fields[key])
-  }
+  const object = keys.reduce(function (o, key) {
+    o[key] = unwrapValue_(fields[key])
+    return o
+  }, {})
 
   return object
 }
@@ -175,27 +171,11 @@ function wrapLatLong_ (latLong) {
 }
 
 function wrapArray_ (array) {
-  const wrappedArray = []
-
-  for (var i = 0; i < array.length; i++) {
-    var value = array[i]
-    wrappedArray.push(wrapValue_(value))
-  }
-
+  const wrappedArray = array.map(wrapValue_)
   return {'arrayValue': {'values': wrappedArray}}
 }
 
 function unwrapArray_ (wrappedArray) {
-  const array = []
-
-  if (!wrappedArray) {
-    return array
-  }
-
-  for (var i = 0; i < wrappedArray.length; i++) {
-    var wrappedValue = wrappedArray[i]
-    array.push(unwrapValue_(wrappedValue))
-  }
-
+  const array = wrappedArray.map(unwrapValue_)
   return array
 }

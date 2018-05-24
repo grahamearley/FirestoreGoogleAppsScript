@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals FirestoreQuery_, getFieldsFromFirestoreDocument_, getIdFromPath_, unwrapDocumentFields_ */
+/* globals FirestoreQuery_, getIdFromPath_, unwrapDocumentFields_ */
 
 /**
  * Get the Firestore document or collection at a given path.
@@ -29,7 +29,6 @@ function getPage_ (path, pageToken, request) {
   if (pageToken) {
     request.addParam('pageToken', pageToken)
   }
-
   return request.get(path)
 }
 
@@ -67,12 +66,10 @@ function getDocumentResponsesFromCollection_ (path, request) {
  */
 function getDocumentIds_ (path, request) {
   const documentResponses = getDocumentResponsesFromCollection_(path, request)
-  const ids = []
-
   // Create ID list from documents
-  for (var i = 0; i < documentResponses.length; i++) {
-    ids.push(getIdFromPath_(documentResponses[i].name))
-  }
+  const ids = documentResponses.map(function (doc) {
+    return getIdFromPath_(doc.name)
+  })
 
   return ids
 }
@@ -87,13 +84,7 @@ function getDocumentIds_ (path, request) {
  */
 function getDocuments_ (path, request) {
   const documentResponses = getDocumentResponsesFromCollection_(path, request)
-  const documents = []
-
-  for (var i = 0; i < documentResponses.length; i++) {
-    documents.push(unwrapDocumentFields_(documentResponses[i]))
-  }
-
-  return documents
+  return documentResponses.map(unwrapDocumentFields_)
 }
 
 /**

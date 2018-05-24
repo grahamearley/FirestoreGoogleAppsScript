@@ -137,11 +137,11 @@ var FirestoreQuery_ = function (from, callback) {
     if (!query.orderBy) {
       query.orderBy = []
     }
-    dir = (dir && (dir.substr(0, 3).toUpperCase() === 'DEC' || dir.substr(0, 4).toUpperCase() === 'DESC')) ? 'DESCENDING' : 'ASCENDING'
+    const isDesc = dir && (dir.substr(0, 3).toUpperCase() === 'DEC' || dir.substr(0, 4).toUpperCase() === 'DESC')
 
     query.orderBy.push({
       field: fieldRef(field),
-      direction: dir
+      direction: isDesc ? 'DESCENDING' : 'ASCENDING'
     })
     return this_
   }
