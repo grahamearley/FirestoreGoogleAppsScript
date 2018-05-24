@@ -165,10 +165,10 @@ function query_ (from, authToken, projectId) {
 
     const documents = responseObj.reduce(function (docs, fireDoc) {
       if (fireDoc.document) {
-        var doc = getFieldsFromFirestoreDocument_(fireDoc.document)
-        if (doc) {
-          docs.push(doc)
+        if (fireDoc.document.fields) {
+          fireDoc.document.fields = getFieldsFromFirestoreDocument_(fireDoc.document)
         }
+        docs.push(fireDoc.document)
       }
       return docs
     }, [])
