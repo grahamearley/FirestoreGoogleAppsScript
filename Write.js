@@ -1,9 +1,10 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals UrlFetchApp, checkForError_, createFirestoreDocument_, getObjectFromResponse_, removeTrailingSlash_ */
+/* globals createFirestoreDocument_, fetchObject_, removeTrailingSlash_ */
 
 /**
  * Create a document with the given ID and fields.
  *
+ * @private
  * @param {string} path the path where the document will be written
  * @param {string} documentId the document's ID in Firestore
  * @param {object} fields the document's fields
@@ -27,17 +28,13 @@ function createDocumentWithId_ (path, documentId, fields, authToken, projectId) 
     'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + authToken}
   }
 
-  const response = UrlFetchApp.fetch(baseUrl, options)
-  const responseObj = getObjectFromResponse_(response)
-
-  checkForError_(responseObj)
-
-  return responseObj
+  return fetchObject_(baseUrl, options)
 }
 
 /**
  * Create a document with the given fields and an auto-generated ID.
  *
+ * @private
  * @param {string} path the path where the document will be written
  * @param {object} fields the document's fields
  * @param {string} authToken an authentication token for writing to Firestore
@@ -51,6 +48,7 @@ function createDocument_ (path, fields, authToken, projectId) {
 /**
  * Update/patch a document at the given path with new fields.
  *
+ * @private
  * @param {string} path the path of the document to update
  * @param {object} fields the document's new fields
  * @param {string} authToken an authentication token for writing to Firestore
@@ -68,9 +66,5 @@ function updateDocument_ (path, fields, authToken, projectId) {
     'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + authToken}
   }
 
-  const response = UrlFetchApp.fetch(baseUrl, options)
-  const responseObj = getObjectFromResponse_(response)
-  checkForError_(responseObj)
-
-  return responseObj
+  return fetchObject_(baseUrl, options)
 }

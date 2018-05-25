@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals Utilities */
+/* globals UrlFetchApp, Utilities */
 
 // RegEx test for root path references
 var regexPath_ = /^projects\/.+?\/databases\/\(default\)\/documents\/.+\/.+$/
@@ -12,6 +12,10 @@ function isInt_ (n) {
   return n % 1 === 0
 }
 
+function isNumeric_ (val) {
+  return Number(parseFloat(val)) === val
+}
+
 function base64EncodeSafe_ (string) {
   const encoded = Utilities.base64EncodeWebSafe(string)
   return encoded.replace(/=/g, '')
@@ -21,19 +25,24 @@ function removeTrailingSlash_ (string) {
   const length = string.length
   if (string.charAt(length - 1) === '/') {
     // Remove trailing slash
-    return string.substr(0, length - 1)
-  } else {
-    return string
+    string = string.substr(0, length - 1)
   }
+  return string
 }
 
-function getObjectFromResponse_ (response) {
-  return JSON.parse(response.getContentText())
+function fetchObject_ (url, options) {
+  const response = UrlFetchApp.fetch(url, options)
+  const responseObj = JSON.parse(response.getContentText())
+  checkForError_(responseObj)
+  return responseObj
 }
 
 function checkForError_ (responseObj) {
   if (responseObj['error']) {
     throw new Error(responseObj['error']['message'])
+  }
+  if (Array.isArray(responseObj) && responseObj.length && responseObj[0]['error']) {
+    throw new Error(responseObj[0]['error']['message'])
   }
 }
 

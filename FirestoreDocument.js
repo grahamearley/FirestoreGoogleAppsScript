@@ -8,18 +8,14 @@
  */
 function createFirestoreDocument_ (fields) {
   const keys = Object.keys(fields)
-  const firestoreObj = {}
-
-  firestoreObj['fields'] = {}
+  const fieldsObj = {}
 
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i]
-    var val = fields[key]
-
-    firestoreObj['fields'][key] = wrapValue_(val)
+    fieldsObj[key] = wrapValue_(fields[key])
   }
 
-  return firestoreObj
+  return {fields: fieldsObj}
 }
 
 /**
@@ -56,8 +52,7 @@ function wrapValue_ (value) {
       return wrapNumber_(value)
     case 'boolean':
       return wrapBoolean_(value)
-    default:
-      // error
+    default: // error
       return null
   }
 }

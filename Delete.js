@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* global UrlFetchApp, checkForError_, getObjectFromResponse_ */
+/* global fetchObject_ */
 
 /**
  * Delete the Firestore document at the given path.
@@ -18,8 +18,5 @@ function deleteDocument_ (pathToDocument, authToken, projectId) {
     'headers': {'content-type': 'application/json', 'Authorization': 'Bearer ' + authToken}
   }
 
-  var responseObj = getObjectFromResponse_(UrlFetchApp.fetch(baseUrl, options))
-  checkForError_(responseObj)
-
-  return responseObj
+  return fetchObject_(baseUrl, options)
 }
