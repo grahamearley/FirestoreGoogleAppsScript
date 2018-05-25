@@ -1,5 +1,14 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals IsNumeric_, wrapValue_ */
+/* globals isNumeric_, wrapValue_ */
+
+/**
+ * This callback type is called `queryCallback`.
+ *  Callback should utilize the Query parameter to send a request and return the response.
+ *
+ * @callback queryCallback
+ * @param {object} query the Structured Query to utilize in the query request {@link FirestoreQuery_}
+ * @returns [object] response of the sent query
+ */
 
 /**
  * An object that acts as a Query to be a structured query.
@@ -7,8 +16,8 @@
  * @class
  * @private
  * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery Firestore Structured Query}
- * @param {string} from the base collection to query
- * @param {string} callback the function that is executed with the internally compiled query
+ * @param {string[]} from the base collection to query
+ * @param {queryCallback} callback the function that is executed with the internally compiled query
  */
 var FirestoreQuery_ = function (from, callback) {
   const this_ = this
@@ -92,7 +101,7 @@ var FirestoreQuery_ = function (from, callback) {
    *
    * @param {string} field The field to reference for filtering
    * @param {string} operator The operator to filter by. {@link fieldOps} {@link unaryOps}
-   * @param {?number|?string|?array|?object} value Object to set the field value to. Null if using a unary operator.
+   * @param {*} [value] Object to set the field value to. Null if using a unary operator.
    * @returns {object} this query object for chaining
    */
   this.where = function (field, operator, value) {
@@ -143,7 +152,9 @@ var FirestoreQuery_ = function (from, callback) {
    * @returns {object} this query object for chaining
    */
   this.offset = function (offset) {
-    if (!IsNumeric_(offset)) { throw new TypeError('Offset is not a valid number!') }
+    if (!isNumeric_(offset)) {
+      throw new TypeError('Offset is not a valid number!')
+    }
     query.offset = offset
     return this_
   }
@@ -155,7 +166,9 @@ var FirestoreQuery_ = function (from, callback) {
    * @returns {object} this query object for chaining
    */
   this.limit = function (limit) {
-    if (!IsNumeric_(limit)) { throw new TypeError('Limit is not a valid number!') }
+    if (!isNumeric_(limit)) {
+      throw new TypeError('Limit is not a valid number!')
+    }
     query.limit = limit
     return this_
   }

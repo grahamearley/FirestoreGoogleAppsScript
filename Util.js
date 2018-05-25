@@ -12,7 +12,7 @@ function isInt_ (n) {
   return n % 1 === 0
 }
 
-function IsNumeric_ (val) {
+function isNumeric_ (val) {
   return Number(parseFloat(val)) === val
 }
 

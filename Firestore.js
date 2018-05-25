@@ -96,10 +96,10 @@ var Firestore = function (email, key, projectId) {
    *  return an all the documents that match the query.
    * Must call .execute() to send the request.
    *
-   * @param {string} path to check (can be repeated any number of times)
+   * @param {...string} path to check (can be repeated any number of times)
    * @return {object} the JSON response from the GET request
    */
-  this.query = function () {
+  this.query = function (path) {
     const from = Array.prototype.slice.call(arguments)
     return query_(from, authToken, projectId)
   }

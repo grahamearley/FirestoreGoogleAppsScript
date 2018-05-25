@@ -144,7 +144,7 @@ function getDocument_ (path, authToken, projectId) {
  * Set up a Query to receive data from a collection
  *
  * @private
- * @param {string} from the path to the document or collection to get
+ * @param {string[]} from the path to the document or collection to get
  * @param {string} authToken an authentication token for reading from Firestore
  * @param {string} projectId the Firestore project ID
  * @return {object} A FirebaseQuery object to set up the query and eventually execute
