@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals FirestoreQuery_, getIdFromPath_, unwrapDocumentFields_ */
+/* globals FirestoreQuery_, getCollectionFromPath_, regexPath_, unwrapDocumentFields_ */
 
 /**
  * Get the Firestore document or collection at a given path.
@@ -58,6 +58,7 @@ function getDocumentResponsesFromCollection_ (path, request) {
 
 /**
  * Get a list of all IDs of the documents in a collection.
+ *  Works with nested collections.
  *
  * @private
  * @param {string} path the path to the collection
@@ -65,26 +66,12 @@ function getDocumentResponsesFromCollection_ (path, request) {
  * @return {object} an array of IDs of the documents in the collection
  */
 function getDocumentIds_ (path, request) {
-  const documentResponses = getDocumentResponsesFromCollection_(path, request)
-  // Create ID list from documents
-  const ids = documentResponses.map(function (doc) {
-    return getIdFromPath_(doc.name)
+  const documents = query_(path, request).select().execute()
+  const ids = documents.map(function (doc) {
+    const ref = doc.name.match(regexPath_)[1] // Gets the doc name field and extracts the relative path
+    return ref.substr(path.length + 1) // Skip over the given path to gain the ID values
   })
-
   return ids
-}
-
-/**
- * Get a list of all documents in a collection.
- *
- * @private
- * @param {string} path the path to the collection
- * @param {string} request the Firestore Request object to manipulate
- * @return {object} an array of the documents in the collection
- */
-function getDocuments_ (path, request) {
-  const documentResponses = getDocumentResponsesFromCollection_(path, request)
-  return documentResponses.map(unwrapDocumentFields_)
 }
 
 /**
@@ -106,16 +93,19 @@ function getDocument_ (path, request) {
  * Set up a Query to receive data from a collection
  *
  * @private
- * @param {string[]} from the path to the document or collection to get
+ * @param {string} path the path to the document or collection to query
  * @param {string} request the Firestore Request object to manipulate
  * @return {object} A FirestoreQuery object to set up the query and eventually execute
  */
-function query_ (from, request) {
+function query_ (path, request) {
+  const grouped = getCollectionFromPath_(path)
   const callback = function (query) {
-    const responseObj = request.post(':runQuery', {
+    // Send request to innermost document with given query
+    const responseObj = request.post(grouped[0] + ':runQuery', {
       structuredQuery: query
     })
 
+    // Filter out results without documents and unwrap document fields
     const documents = responseObj.reduce(function (docs, fireDoc) {
       if (fireDoc.document) {
         docs.push(unwrapDocumentFields_(fireDoc.document))
@@ -125,5 +115,5 @@ function query_ (from, request) {
 
     return documents
   }
-  return new FirestoreQuery_(from, callback)
+  return new FirestoreQuery_(grouped[1], callback)
 }

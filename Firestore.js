@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_|Fire|get" }] */
-/* globals FirestoreRequest_, createDocument_, deleteDocument_, getAuthToken_, getDocument_, getDocuments_, getDocumentIds_, query_, updateDocument_ */
+/* globals FirestoreRequest_, createDocument_, deleteDocument_, getAuthToken_, getDocument_, getDocumentIds_, query_, updateDocument_ */
 
 /**
  * Get an object that acts as an authenticated interface with a Firestore project.
@@ -30,54 +30,6 @@ var Firestore = function (email, key, projectId) {
   const baseUrl = 'https://firestore.googleapis.com/v1beta1/projects/' + projectId + '/databases/(default)/documents/'
 
   /**
-   * Create a document with the given ID and fields.
-   *
-   * @param {string} documentId the document's ID in Firestore
-   * @param {string} path the path where the document will be written
-   * @param {object} fields the document's fields
-   * @return {object} the Document object written to Firestore
-   */
-  this.createDocumentWithId = function (documentId, path, fields) {
-    const request = new FirestoreRequest_(baseUrl, authToken)
-    return createDocument_(path, documentId, fields, request)
-  }
-
-  /**
-   * Create a document with the given fields and an auto-generated ID.
-   *
-   * @param {string} path the path where the document will be written
-   * @param {object} fields the document's fields
-   * @return {object} the Document object written to Firestore
-   */
-  this.createDocument = function (path, fields) {
-    const request = new FirestoreRequest_(baseUrl, authToken)
-    return createDocument_(path, null, fields, request)
-  }
-
-  /**
-   * Update/patch a document at the given path with new fields.
-   *
-   * @param {string} path the path of the document to update
-   * @param {object} fields the document's new fields
-   * @return {object} the Document object written to Firestore
-   */
-  this.updateDocument = function (path, fields) {
-    const request = new FirestoreRequest_(baseUrl, authToken)
-    return updateDocument_(path, fields, request)
-  }
-
-  /**
-   * Get a list of all documents in a collection.
-   *
-   * @param {string} path the path to the collection
-   * @return {object} an array of the documents in the collection
-   */
-  this.getDocuments = function (path) {
-    const request = new FirestoreRequest_(baseUrl, authToken)
-    return getDocuments_(path, request)
-  }
-
-  /**
    * Get a document.
    *
    * @param {string} path the path to the document
@@ -89,7 +41,17 @@ var Firestore = function (email, key, projectId) {
   }
 
   /**
-   * Get a list of all IDs of the documents in a collection.
+   * Get a list of all documents in a collection.
+   *
+   * @param {string} path the path to the collection
+   * @return {object} an array of the documents in the collection
+   */
+  this.getDocuments = function (path) {
+    return this.query(path).execute()
+  }
+
+  /**
+   * Get a list of all IDs of the documents in a path
    *
    * @param {string} path the path to the collection
    * @return {object} an array of IDs of the documents in the collection
@@ -100,17 +62,54 @@ var Firestore = function (email, key, projectId) {
   }
 
   /**
+   * Create a document with the given ID and fields.
+   *
+   * @deprecated in favor of using this.createDocument
+   * @param {string} documentId the document's ID in Firestore
+   * @param {string} path the path where the document will be written
+   * @param {object} fields the document's fields
+   * @return {object} the Document object written to Firestore
+   */
+  this.createDocumentWithId = function (documentId, path, fields) {
+    return this.createDocument([path, documentId].join('/'), fields)
+  }
+
+  /**
+   * Create a document with the given fields and an auto-generated ID.
+   *
+   * @param {string} path the path where the document will be written
+   * @param {object} fields the document's fields
+   * @return {object} the Document object written to Firestore
+   */
+  this.createDocument = function (path, fields) {
+    const request = new FirestoreRequest_(baseUrl, authToken)
+    return createDocument_(path, fields, request)
+  }
+
+  /**
+   * Update/patch a document at the given path with new fields.
+   *
+   * @param {string} path the path of the document to update.
+   *                      If document name not provided, a random ID will be generated.
+   * @param {object} fields the document's new fields
+   * @return {object} the Document object written to Firestore
+   */
+  this.updateDocument = function (path, fields) {
+    const request = new FirestoreRequest_(baseUrl, authToken)
+    return updateDocument_(path, fields, request)
+  }
+
+  /**
    * Run a query against the Firestore Database and
    *  return an all the documents that match the query.
    * Must call .execute() to send the request.
    *
-   * @param {...string} path to check (can be repeated any number of times)
+   * @param {string} path to query
    * @return {object} the JSON response from the GET request
    */
   this.query = function (path) {
-    const from = Array.prototype.slice.call(arguments)
     const request = new FirestoreRequest_(baseUrl, authToken)
-    return query_(from, request)
+    return query_(path, request)
   }
 
   /**

@@ -17,7 +17,7 @@
  * @constructor
  * @private
  * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery Firestore Structured Query}
- * @param {string[]} from the base collection to query
+ * @param {string} from the base collection to query
  * @param {queryCallback} callback the function that is executed with the internally compiled query
  */
 var FirestoreQuery_ = function (from, callback) {
@@ -67,12 +67,9 @@ var FirestoreQuery_ = function (from, callback) {
     throw new Error('Invalid Operator given ' + operator)
   }
 
-  const query = {
-    from: from.map(function (collection) {
-      return {
-        collectionId: collection
-      }
-    })
+  const query = {}
+  if (from) {
+    query.from = [{collectionId: from}]
   }
 
   /**

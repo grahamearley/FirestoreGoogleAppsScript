@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals createFirestoreDocument_, removeTrailingSlash_ */
+/* globals createFirestoreDocument_, getDocumentFromPath_ */
 
 /**
  * Create a document with the given ID and fields.
@@ -11,14 +11,15 @@
  * @param {string} request the Firestore Request object to manipulate
  * @return {object} the Document object written to Firestore
  */
-function createDocument_ (path, documentId, fields, request) {
+function createDocument_ (path, fields, request) {
+  const pathDoc = getDocumentFromPath_(path)
   const firestoreObject = createFirestoreDocument_(fields)
-  const pathWithNoTrailingSlash = removeTrailingSlash_(path)
+  const documentId = pathDoc[1]
 
   if (documentId) {
     request.addParam('documentId', documentId)
   }
-  return request.post(pathWithNoTrailingSlash, firestoreObject)
+  return request.post(pathDoc[0], firestoreObject)
 }
 
 /**
@@ -32,6 +33,5 @@ function createDocument_ (path, documentId, fields, request) {
  */
 function updateDocument_ (path, fields, request) {
   const firestoreObject = createFirestoreDocument_(fields)
-
   return request.patch(path, firestoreObject)
 }
