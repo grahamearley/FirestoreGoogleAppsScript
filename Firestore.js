@@ -62,19 +62,6 @@ var Firestore = function (email, key, projectId) {
   }
 
   /**
-   * Create a document with the given ID and fields.
-   *
-   * @deprecated in favor of using this.createDocument
-   * @param {string} documentId the document's ID in Firestore
-   * @param {string} path the path where the document will be written
-   * @param {object} fields the document's fields
-   * @return {object} the Document object written to Firestore
-   */
-  this.createDocumentWithId = function (documentId, path, fields) {
-    return this.createDocument([path, documentId].join('/'), fields)
-  }
-
-  /**
    * Create a document with the given fields and an auto-generated ID.
    *
    * @param {string} path the path where the document will be written

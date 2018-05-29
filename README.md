@@ -37,9 +37,15 @@ const data = {
 }
 ```
 
-Now, we can create a document called `FirstDocument` at a collection called `FirstCollection`:
+We can choose to create a document in collection called `FirstCollection` without an ID:
+
 ```javascript
-firestore.createDocumentWithId("FirstDocument", "FirstCollection", data)
+firestore.createDocument("FirstCollection", data)
+```
+
+Alternatively, we can create the document in the `FirstCollection` collection called `FirstDocument`:
+```javascript
+firestore.createDocument("FirstCollection/FirstDocument", data)
 ```
 
 To update the document at this location, we can use the `updateDocument` function:
@@ -49,7 +55,29 @@ firestore.updateDocument("FirstCollection/FirstDocument", data)
 
 **Note:** Although you can call `updateDocument` without using `createDocument` to create the document, any documents in your path will not be created and thus you can only access the document by using the path explicitly.
 
-See other library methods [in the wiki](https://github.com/grahamearley/FirestoreGoogleAppsScript/wiki/Firestore-Method-Documentation).
+You can retrieve your data by calling the `getDocument` function:
+
+```javascript
+const dataWithMetadata = firestore.getDocument("FirstCollection/FirstDocument")
+```
+
+You can also retrieve all documents within a collection by using the `getDocuments` function:
+
+```javascript
+const allDocuments = firestore.getDocuments("FirstCollection")
+```
+
+If more specific queries need to be performed, you can use the `query` function followed by an `execute` invocation to get that data:
+
+```javascript
+const allDocumentsWithTest = firestore.query("FirstCollection").where("name", "==", "Test!").execute()
+```
+
+See other library methods and details [in the wiki](https://github.com/grahamearley/FirestoreGoogleAppsScript/wiki/Firestore-Method-Documentation).
+
+### Breaking Changes
+* v16: **Removed:** `createDocumentWithId(documentId, path, fields)`
+  > Utilize `createDocument(path + '/' + documentId, fields)` instead to create a document with a specific ID. 
 
 ## Contributions
 Contributions are welcome — send a pull request! This library is a work in progress. See [here](https://github.com/grahamearley/FirestoreGoogleAppsScript/blob/master/CONTRIBUTING.md) for more information on contributing.
