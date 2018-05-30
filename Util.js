@@ -1,8 +1,8 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
 /* globals UrlFetchApp, Utilities */
 
-// RegEx test for root path references
-var regexPath_ = /^projects\/.+?\/databases\/\(default\)\/documents\/.+\/.+$/
+// RegEx test for root path references. Groups relative path for extraction.
+var regexPath_ = /^projects\/.+?\/databases\/\(default\)\/documents\/(.+\/.+)$/
 // RegEx test for testing for binary data by checking for non-printable characters.
 // Parsing strings for binary data is completely dependent on the data being sent over.
 var regexBinary_ = /[\x00-\x08\x0E-\x1F]/ // eslint-disable-line no-control-regex
@@ -21,15 +21,6 @@ function base64EncodeSafe_ (string) {
   return encoded.replace(/=/g, '')
 }
 
-function removeTrailingSlash_ (string) {
-  const length = string.length
-  if (string.charAt(length - 1) === '/') {
-    // Remove trailing slash
-    string = string.substr(0, length - 1)
-  }
-  return string
-}
-
 function fetchObject_ (url, options) {
   const response = UrlFetchApp.fetch(url, options)
   const responseObj = JSON.parse(response.getContentText())
@@ -45,14 +36,24 @@ function checkForError_ (responseObj) {
     throw new Error(responseObj[0]['error']['message'])
   }
 }
-
-function getIdFromPath_ (path) {
-  return path.split('/').pop()
+function getCollectionFromPath_ (path) {
+  return getColDocFromPath_(path, false)
+}
+function getDocumentFromPath_ (path) {
+  return getColDocFromPath_(path, true)
 }
 
-function addAll_ (array, itemsToAdd) {
-  for (var i = 0; i < itemsToAdd.length; i++) {
-    var item = itemsToAdd[i]
-    array.push(item)
-  }
+function getColDocFromPath_ (path, isDocument) {
+  // Path defaults to empty string if it doesn't exist. Remove insignificant slashes.
+  const splitPath = (path || '').split('/').filter(function (p) {
+    return p
+  })
+  const len = splitPath.length
+
+  // Set item path to document if isDocument, otherwise set to collection if exists.
+  // This works because path is always in the format of "collection/document/collection/document/etc.."
+  const item = len && len & 1 ^ isDocument ? splitPath.splice(len - 1, 1)[0] : ''
+
+  // Remainder of path is in splitPath. Put back together and return.
+  return [splitPath.join('/'), item]
 }

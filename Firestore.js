@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_|Fire|get" }] */
-/* globals createDocument_, createDocumentWithId_, deleteDocument_, getAuthToken_, getDocument_, getDocuments_, getDocumentIds_, query_, updateDocument_ */
+/* globals FirestoreRequest_, createDocument_, deleteDocument_, getAuthToken_, getDocument_, getDocumentIds_, query_, updateDocument_ */
 
 /**
  * Get an object that acts as an authenticated interface with a Firestore project.
@@ -16,6 +16,7 @@ function getFirestore (email, key, projectId) {
 /**
  * An object that acts as an authenticated interface with a Firestore project.
  *
+ * @constructor
  * @param {string} email the user email address (for authentication)
  * @param {string} key the user private key (for authentication)
  * @param {string} projectId the Firestore project ID
@@ -26,17 +27,38 @@ var Firestore = function (email, key, projectId) {
    * The authentication token used for accessing Firestore.
    */
   const authToken = getAuthToken_(email, key, 'https://www.googleapis.com/oauth2/v4/token/')
+  const baseUrl = 'https://firestore.googleapis.com/v1beta1/projects/' + projectId + '/databases/(default)/documents/'
 
   /**
-   * Create a document with the given ID and fields.
+   * Get a document.
    *
-   * @param {string} documentId the document's ID in Firestore
-   * @param {string} path the path where the document will be written
-   * @param {object} fields the document's fields
-   * @return {object} the Document object written to Firestore
+   * @param {string} path the path to the document
+   * @return {object} the document object
    */
-  this.createDocumentWithId = function (documentId, path, fields) {
-    return createDocumentWithId_(path, documentId, fields, authToken, projectId)
+  this.getDocument = function (path) {
+    const request = new FirestoreRequest_(baseUrl, authToken)
+    return getDocument_(path, request)
+  }
+
+  /**
+   * Get a list of all documents in a collection.
+   *
+   * @param {string} path the path to the collection
+   * @return {object} an array of the documents in the collection
+   */
+  this.getDocuments = function (path) {
+    return this.query(path).execute()
+  }
+
+  /**
+   * Get a list of all IDs of the documents in a path
+   *
+   * @param {string} path the path to the collection
+   * @return {object} an array of IDs of the documents in the collection
+   */
+  this.getDocumentIds = function (path) {
+    const request = new FirestoreRequest_(baseUrl, authToken)
+    return getDocumentIds_(path, request)
   }
 
   /**
@@ -47,48 +69,21 @@ var Firestore = function (email, key, projectId) {
    * @return {object} the Document object written to Firestore
    */
   this.createDocument = function (path, fields) {
-    return createDocument_(path, fields, authToken, projectId)
+    const request = new FirestoreRequest_(baseUrl, authToken)
+    return createDocument_(path, fields, request)
   }
 
   /**
    * Update/patch a document at the given path with new fields.
    *
-   * @param {string} path the path of the document to update
+   * @param {string} path the path of the document to update.
+   *                      If document name not provided, a random ID will be generated.
    * @param {object} fields the document's new fields
    * @return {object} the Document object written to Firestore
    */
   this.updateDocument = function (path, fields) {
-    return updateDocument_(path, fields, authToken, projectId)
-  }
-
-  /**
-   * Get a list of all documents in a collection.
-   *
-   * @param {string} pathToCollection the path to the collection
-   * @return {object} an array of the documents in the collection
-   */
-  this.getDocuments = function (pathToCollection) {
-    return getDocuments_(pathToCollection, authToken, projectId)
-  }
-
-  /**
-   * Get a document.
-   *
-   * @param {string} path the path to the document
-   * @return {object} the document object
-   */
-  this.getDocument = function (path) {
-    return getDocument_(path, authToken, projectId)
-  }
-
-  /**
-   * Get a list of all IDs of the documents in a collection.
-   *
-   * @param {string} pathToCollection the path to the collection
-   * @return {object} an array of IDs of the documents in the collection
-   */
-  this.getDocumentIds = function (pathToCollection) {
-    return getDocumentIds_(pathToCollection, authToken, projectId)
+    const request = new FirestoreRequest_(baseUrl, authToken)
+    return updateDocument_(path, fields, request)
   }
 
   /**
@@ -96,22 +91,23 @@ var Firestore = function (email, key, projectId) {
    *  return an all the documents that match the query.
    * Must call .execute() to send the request.
    *
-   * @param {...string} path to check (can be repeated any number of times)
+   * @param {string} path to query
    * @return {object} the JSON response from the GET request
    */
   this.query = function (path) {
-    const from = Array.prototype.slice.call(arguments)
-    return query_(from, authToken, projectId)
+    const request = new FirestoreRequest_(baseUrl, authToken)
+    return query_(path, request)
   }
 
   /**
    * Delete the Firestore document at the given path.
    * Note: this deletes ONLY this document, and not any subcollections.
    *
-   * @param {string} pathToDocument the path to the document to delete
+   * @param {string} path the path to the document to delete
    * @return {object} the JSON response from the DELETE request
    */
-  this.deleteDocument = function (pathToDocument) {
-    return deleteDocument_(pathToDocument, authToken, projectId)
+  this.deleteDocument = function (path) {
+    const request = new FirestoreRequest_(baseUrl, authToken)
+    return deleteDocument_(path, request)
   }
 }

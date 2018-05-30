@@ -12,11 +12,12 @@
 
 /**
  * An object that acts as a Query to be a structured query.
+ * Chain methods to update query. Must call .execute to send request.
  *
- * @class
+ * @constructor
  * @private
  * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery Firestore Structured Query}
- * @param {string[]} from the base collection to query
+ * @param {string} from the base collection to query
  * @param {queryCallback} callback the function that is executed with the internally compiled query
  */
 var FirestoreQuery_ = function (from, callback) {
@@ -66,12 +67,9 @@ var FirestoreQuery_ = function (from, callback) {
     throw new Error('Invalid Operator given ' + operator)
   }
 
-  const query = {
-    from: from.map(function (collection) {
-      return {
-        collectionId: collection
-      }
-    })
+  const query = {}
+  if (from) {
+    query.from = [{collectionId: from}]
   }
 
   /**
@@ -136,11 +134,11 @@ var FirestoreQuery_ = function (from, callback) {
     if (!query.orderBy) {
       query.orderBy = []
     }
-    dir = (dir && (dir.substr(0, 3).toUpperCase() === 'DEC' || dir.substr(0, 4).toUpperCase() === 'DESC')) ? 'DESCENDING' : 'ASCENDING'
+    const isDesc = dir && (dir.substr(0, 3).toUpperCase() === 'DEC' || dir.substr(0, 4).toUpperCase() === 'DESC')
 
     query.orderBy.push({
       field: fieldRef(field),
-      direction: dir
+      direction: isDesc ? 'DESCENDING' : 'ASCENDING'
     })
     return this_
   }
