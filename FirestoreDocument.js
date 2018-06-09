@@ -176,6 +176,6 @@ function wrapArray_ (array) {
 }
 
 function unwrapArray_ (wrappedArray) {
-  const array = wrappedArray.map(unwrapValue_)
+  const array = (wrappedArray || []).map(unwrapValue_)
   return array
 }
