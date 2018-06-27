@@ -46,11 +46,17 @@ var FirestoreQuery_ = function (from, callback) {
   const filter = function (field, operator, value) {
     // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#FieldFilter Field Filter}
     if (operator in fieldOps) {
-      return {
-        fieldFilter: {
-          field: fieldRef(field),
-          op: fieldOps[operator],
-          value: wrapValue_(value)
+      if (value == null) { // Covers null and undefined values
+        operator = 'null'
+      } else if (isNaN(value)) { // Covers NaN
+        operator = 'nan'
+      } else {
+        return {
+          fieldFilter: {
+            field: fieldRef(field),
+            op: fieldOps[operator],
+            value: wrapValue_(value)
+          }
         }
       }
     }
