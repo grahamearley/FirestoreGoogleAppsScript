@@ -57,3 +57,14 @@ function getColDocFromPath_ (path, isDocument) {
   // Remainder of path is in splitPath. Put back together and return.
   return [splitPath.join('/'), item]
 }
+
+/**
+ * Check if a value is of type Number but is NaN.
+ *  This check prevents seeing non-numeric values as NaN.
+ *
+ * @param {value} the value to check
+ * @returns {boolean} whether the given value is of type number and equal to NaN
+ */
+function isNumberNaN(value) {
+  return typeof(value) == "number" && isNaN(value)
+}
