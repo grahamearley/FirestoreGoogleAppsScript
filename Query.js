@@ -48,7 +48,7 @@ var FirestoreQuery_ = function (from, callback) {
     if (operator in fieldOps) {
       if (value == null) { // Covers null and undefined values
         operator = 'null'
-      } else if (isNaN(value)) { // Covers NaN
+      } else if (isNumberNaN(value)) { // Covers NaN
         operator = 'nan'
       } else {
         return {
