@@ -6,6 +6,9 @@ var regexPath_ = /^projects\/.+?\/databases\/\(default\)\/documents\/(.+\/.+)$/
 // RegEx test for testing for binary data by checking for non-printable characters.
 // Parsing strings for binary data is completely dependent on the data being sent over.
 var regexBinary_ = /[\x00-\x08\x0E-\x1F]/ // eslint-disable-line no-control-regex
+// RegEx test for finding and capturing milliseconds.
+// Apps Scripts doesn't support RFC3339 Date Formats, nanosecond precision must be trimmed.
+var regexDatePrecision_ = /(\.\d{0,3})\d+/
 
 // Assumes n is a Number.
 function isInt_ (n) {

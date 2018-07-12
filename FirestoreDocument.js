@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals isInt_, regexPath_, regexBinary_ */
+/* globals isInt_, regexPath_, regexBinary_, regexDatePrecision_ */
 
 /**
  * Create a Firestore documents with the corresponding fields.
@@ -89,7 +89,8 @@ function unwrapValue_ (value) {
     case 'arrayValue':
       return unwrapArray_(value['values'])
     case 'timestampValue':
-      return new Date(value)
+      // Trim out extra microsecond precision
+      return new Date(value.replace(regexDatePrecision_, '$1'))
     case 'nullValue':
     default: // error
       return null
