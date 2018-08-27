@@ -33,8 +33,9 @@ function createDocument_ (path, fields, request) {
  */
 function updateDocument_ (path, fields, request) {
   const firestoreObject = createFirestoreDocument_(fields)
-  for(field in fields){
-    request.addParam('updateMask.fieldPaths',field)
+  
+  for (field in fields) {
+    request.addParam('updateMask.fieldPaths', field)
   }
   return request.patch(path, firestoreObject)
 }
