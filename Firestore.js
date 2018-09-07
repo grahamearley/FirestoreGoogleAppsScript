@@ -26,7 +26,7 @@ var Firestore = function (email, key, projectId) {
   /**
    * The authentication token used for accessing Firestore.
    */
-  const authToken = getAuthToken_(email, key, 'https://www.googleapis.com/oauth2/v4/token/')
+  const authToken = getAuthToken_(email, key, 'https://oauth2.googleapis.com/token')
   const baseUrl = 'https://firestore.googleapis.com/v1beta1/projects/' + projectId + '/databases/(default)/documents/'
 
   /**
