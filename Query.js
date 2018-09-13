@@ -31,7 +31,7 @@ var FirestoreQuery_ = function (from, callback) {
     '<=': 'LESS_THAN_OR_EQUAL',
     '>': 'GREATER_THAN',
     '>=': 'GREATER_THAN_OR_EQUAL',
-    'array-contains': 'ARRAY_CONTAINS'
+    'contains': 'ARRAY_CONTAINS'
   }
 
   // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#Operator_2 FieldFilter Operator}
