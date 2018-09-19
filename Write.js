@@ -29,13 +29,21 @@ function createDocument_ (path, fields, request) {
  * @param {string} path the path of the document to update
  * @param {object} fields the document's new fields
  * @param {string} request the Firestore Request object to manipulate
+ * @param {boolean} if true, the update will use a mask
  * @return {object} the Document object written to Firestore
  */
-function updateDocument_ (path, fields, request) {
+function updateDocument_ (path, fields, request, mask) {  
+  if (mask) {
+    // abort request if fields object is empty
+    if (!Object.keys(fields).length) {
+      return;
+    }
+    for (field in fields) {
+      request.addParam('updateMask.fieldPaths', field)
+    }
+  }
+
   const firestoreObject = createFirestoreDocument_(fields)
   
-  for (field in fields) {
-    request.addParam('updateMask.fieldPaths', field)
-  }
   return request.patch(path, firestoreObject)
 }
