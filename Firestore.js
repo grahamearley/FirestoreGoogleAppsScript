@@ -79,11 +79,12 @@ var Firestore = function (email, key, projectId) {
    * @param {string} path the path of the document to update.
    *                      If document name not provided, a random ID will be generated.
    * @param {object} fields the document's new fields
+   * @param {boolean} if true, the update will use a mask
    * @return {object} the Document object written to Firestore
    */
-  this.updateDocument = function (path, fields) {
+  this.updateDocument = function (path, fields, mask) {
     const request = new FirestoreRequest_(baseUrl, authToken)
-    return updateDocument_(path, fields, request)
+    return updateDocument_(path, fields, request, mask)
   }
 
   /**
