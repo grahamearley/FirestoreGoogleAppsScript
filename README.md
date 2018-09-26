@@ -16,7 +16,7 @@ The easiest way to use this library is to create a Google Service Account for yo
 If you don't already have a Firestore project you want to use, create one at the [Firebase admin console](https://console.firebase.google.com).
 
 To make a service account,
-1. Open the [Google Service Accounts page by clicking here](https://console.developers.google.com/permissions/serviceaccounts). 
+1. Open the [Google Service Accounts page by clicking here](https://console.developers.google.com/projectselector/iam-admin/serviceaccounts). 
 2. Select your Firestore project, and then click "Create Service Account." 
 3. For your service account's role, choose `Datastore > Cloud Datastore Owner`. 
 4. Check the "Furnish a new private key" box and select JSON as your key type. 
