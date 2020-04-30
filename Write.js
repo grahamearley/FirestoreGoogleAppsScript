@@ -1,5 +1,4 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals createFirestoreDocument_, getDocumentFromPath_ */
 
 /**
  * Create a document with the given ID and fields.
@@ -32,18 +31,18 @@ function createDocument_ (path, fields, request) {
  * @param {boolean} if true, the update will use a mask
  * @return {object} the Document object written to Firestore
  */
-function updateDocument_ (path, fields, request, mask) {  
+function updateDocument_ (path, fields, request, mask) {
   if (mask) {
     // abort request if fields object is empty
     if (!Object.keys(fields).length) {
-      return;
+      return
     }
-    for (field in fields) {
+    for (var field in fields) {
       request.addParam('updateMask.fieldPaths', field)
     }
   }
 
   const firestoreObject = createFirestoreDocument_(fields)
-  
+
   return request.patch(path, firestoreObject)
 }

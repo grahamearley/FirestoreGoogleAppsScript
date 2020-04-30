@@ -1,5 +1,4 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_|Fire|get" }] */
-/* globals FirestoreRequest_, createDocument_, deleteDocument_, getAuthToken_, getDocument_, getDocumentIds_, query_, updateDocument_ */
 
 /**
  * Get an object that acts as an authenticated interface with a Firestore project.

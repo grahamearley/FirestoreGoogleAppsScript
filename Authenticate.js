@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* global FirestoreRequest_, Utilities, base64EncodeSafe_ */
+/* eslint quote-props: ["error", "always"] */
 
 /**
  * Auth token is formatted to {@link https://developers.google.com/identity/protocols/OAuth2ServiceAccount#authorizingrequests}
@@ -14,7 +14,7 @@ function getAuthToken_ (email, key, authUrl) {
   const jwt = createJwt_(email, key, authUrl)
 
   var options = {
-    payload: 'grant_type=' + decodeURIComponent('urn:ietf:params:oauth:grant-type:jwt-bearer') + '&assertion=' + jwt
+    'payload': 'grant_type=' + decodeURIComponent('urn:ietf:params:oauth:grant-type:jwt-bearer') + '&assertion=' + jwt
   }
   const responseObj = new FirestoreRequest_(authUrl, null, options).post()
   return responseObj.access_token
