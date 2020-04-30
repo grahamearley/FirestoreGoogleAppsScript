@@ -159,6 +159,8 @@ var FirestoreQuery_ = function (from, callback) {
   this.offset = function (offset) {
     if (!isNumeric_(offset)) {
       throw new TypeError('Offset is not a valid number!')
+    } else if (offset < 0) {
+      throw new RangeError('Offset must be >= 0!')
     }
     query.offset = offset
     return this_
@@ -173,8 +175,35 @@ var FirestoreQuery_ = function (from, callback) {
   this.limit = function (limit) {
     if (!isNumeric_(limit)) {
       throw new TypeError('Limit is not a valid number!')
+    } else if (limit < 0) {
+      throw new RangeError('Limit must be >= 0!')
     }
     query.limit = limit
+    return this_
+  }
+
+  /**
+   * Sets the range of Query results returned.
+   *
+   * @param {number} start Start result number (inclusive)
+   * @param {number} end End result number (inclusive)
+   * @returns {object} this query object for chaining
+   */
+  this.range = function (start, end) {
+    if (!isNumeric_(start)) {
+      throw new TypeError('Range start is not a valid number!')
+    } else if (!isNumeric_(end)) {
+      throw new TypeError('Range end is not a valid number!')
+    } else if (start < 0) {
+      throw new RangeError('Range start must be >= 0!')
+    } else if (end < 0) {
+      throw new RangeError('Range end must be >= 0!')
+    } else if (start >= end) {
+      throw new RangeError('Range start must be less than range end!')
+    }
+
+    query.offset = start
+    query.limit = end - start
     return this_
   }
 
