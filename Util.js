@@ -1,5 +1,4 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals UrlFetchApp, Utilities */
 
 // RegEx test for root path references. Groups relative path for extraction.
 var regexPath_ = /^projects\/.+?\/databases\/\(default\)\/documents\/(.+\/.+)$/
@@ -16,6 +15,17 @@ function isNumeric_ (val) {
   return Number(parseFloat(val)) === val
 }
 
+/**
+ * Check if a value is of type Number but is NaN.
+ *  This check prevents seeing non-numeric values as NaN.
+ *
+ * @param {value} the value to check
+ * @returns {boolean} whether the given value is of type number and equal to NaN
+ */
+function isNumberNaN_ (value) {
+  return typeof (value) === 'number' && isNaN(value)
+}
+
 function base64EncodeSafe_ (string) {
   const encoded = Utilities.base64EncodeWebSafe(string)
   return encoded.replace(/=/g, '')
@@ -29,11 +39,11 @@ function fetchObject_ (url, options) {
 }
 
 function checkForError_ (responseObj) {
-  if (responseObj['error']) {
-    throw new Error(responseObj['error']['message'])
+  if (responseObj.error) {
+    throw new Error(responseObj.error.message)
   }
-  if (Array.isArray(responseObj) && responseObj.length && responseObj[0]['error']) {
-    throw new Error(responseObj[0]['error']['message'])
+  if (Array.isArray(responseObj) && responseObj.length && responseObj[0].error) {
+    throw new Error(responseObj[0].error.message)
   }
 }
 function getCollectionFromPath_ (path) {
@@ -56,15 +66,4 @@ function getColDocFromPath_ (path, isDocument) {
 
   // Remainder of path is in splitPath. Put back together and return.
   return [splitPath.join('/'), item]
-}
-
-/**
- * Check if a value is of type Number but is NaN.
- *  This check prevents seeing non-numeric values as NaN.
- *
- * @param {value} the value to check
- * @returns {boolean} whether the given value is of type number and equal to NaN
- */
-function isNumberNaN(value) {
-  return typeof(value) == "number" && isNaN(value)
 }

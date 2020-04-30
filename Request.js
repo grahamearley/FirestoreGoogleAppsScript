@@ -1,5 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals fetchObject_ */
+/* eslint quote-props: ["error", "always"] */
 
 /**
  * Manages the requests to send. Chain methods to update options.
@@ -16,7 +16,7 @@ var FirestoreRequest_ = function (url, authToken, options) {
   var queryString = ''
   // Set default header options if none are passed in
   options = options || {
-    headers: {
+    'headers': {
       'content-type': 'application/json',
       'Authorization': 'Bearer ' + authToken
     }
