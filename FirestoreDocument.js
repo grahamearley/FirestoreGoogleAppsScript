@@ -171,7 +171,7 @@ function wrapBoolean_ (boolean) {
 }
 
 function wrapDate_ (date) {
-  return { 'timestampValue': date }
+  return { 'timestampValue': date.toISOString() }
 }
 
 function wrapLatLong_ (latLong) {
