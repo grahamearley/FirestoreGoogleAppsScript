@@ -2,15 +2,6 @@
 /* eslint quote-props: ["error", "always"] */
 
 /**
- * This callback type is called `queryCallback`.
- *  Callback should utilize the Query parameter to send a request and return the response.
- *
- * @callback queryCallback
- * @param {object} query the Structured Query to utilize in the query request {@link FirestoreQuery_}
- * @returns [object] response of the sent query
- */
-
-/**
  * An object that acts as a Query to be a structured query.
  * Chain methods to update query. Must call .execute to send request.
  *
@@ -101,8 +92,8 @@ var FirestoreQuery_ = function (from, callback) {
 
   /**
    * Filter Query by a given field and operator (or additionally a value).
-   *  Can be repeated if multiple filters required.
-   *  Results must satisfy all filters.
+   * Can be repeated if multiple filters required.
+   * Results must satisfy all filters.
    *
    * @param {string} field The field to reference for filtering
    * @param {string} operator The operator to filter by. {@link fieldOps} {@link unaryOps}
@@ -130,7 +121,7 @@ var FirestoreQuery_ = function (from, callback) {
 
   /**
    * Orders the Query results based on a field and specific direction.
-   *  Can be repeated if additional ordering is needed.
+   * Can be repeated if additional ordering is needed.
    *
    * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#Projection Select}
    * @param {string} field The field to order by.
@@ -209,7 +200,7 @@ var FirestoreQuery_ = function (from, callback) {
 
   /**
    * Executes the query with the given callback method and the generated query.
-   *  Must be used at the end of any query for execution.
+   * Must be used at the end of any query for execution.
    *
    * @returns {object} The query results from the execution
    */
