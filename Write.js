@@ -18,7 +18,9 @@ function createDocument_ (path, fields, request) {
   if (documentId) {
     request.addParam('documentId', documentId)
   }
-  return request.post(pathDoc[0], firestoreObject)
+
+  const newDoc = request.post(pathDoc[0], firestoreObject)
+  return unwrapDocumentFields_(newDoc)
 }
 
 /**
@@ -28,7 +30,7 @@ function createDocument_ (path, fields, request) {
  * @param {string} path the path of the document to update
  * @param {object} fields the document's new fields
  * @param {string} request the Firestore Request object to manipulate
- * @param {boolean} if true, the update will use a mask
+ * @param {boolean} if true, the update will use a mask. i.e. true: updates only specific fields, false: overwrites document with specified fields
  * @return {object} the Document object written to Firestore
  */
 function updateDocument_ (path, fields, request, mask) {
@@ -43,6 +45,6 @@ function updateDocument_ (path, fields, request, mask) {
   }
 
   const firestoreObject = createFirestoreDocument_(fields)
-
-  return request.patch(path, firestoreObject)
+  const updatedDoc = request.patch(path, firestoreObject)
+  return unwrapDocumentFields_(updatedDoc)
 }

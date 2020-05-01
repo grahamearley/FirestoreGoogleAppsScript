@@ -4,6 +4,7 @@
 /**
  * Create a Firestore documents with the corresponding fields.
  *
+ * @private
  * @param {object} fields the document's fields
  * @return {object} a Firestore document with the given fields
  */
@@ -20,6 +21,7 @@ function createFirestoreDocument_ (fields) {
 /**
  * Extract fields from a Firestore document.
  *
+ * @private
  * @param {object} firestoreDoc the Firestore document whose fields will be extracted
  * @return {object} an object with the given document's fields and values
  */
@@ -48,6 +50,12 @@ function getFieldsFromFirestoreDocument_ (firestoreDoc) {
 function unwrapDocumentFields_ (docResponse) {
   if (docResponse.fields) {
     docResponse.fields = getFieldsFromFirestoreDocument_(docResponse)
+  }
+  if (docResponse.createTime) {
+    docResponse.createTime = unwrapDate_(docResponse.createTime)
+  }
+  if (docResponse.updateTime) {
+    docResponse.updateTime = unwrapDate_(docResponse.updateTime)
   }
   return docResponse
 }
@@ -89,7 +97,7 @@ function unwrapValue_ (value) {
     case 'arrayValue':
       return unwrapArray_(value.values)
     case 'timestampValue':
-      return new Date(value)
+      return unwrapDate_(value)
     case 'nullValue':
     default: // error
       return null
@@ -178,4 +186,9 @@ function wrapArray_ (array) {
 function unwrapArray_ (wrappedArray) {
   const array = (wrappedArray || []).map(unwrapValue_)
   return array
+}
+
+function unwrapDate_ (wrappedDate) {
+  // Trim out extra microsecond precision
+  return new Date(wrappedDate.replace(regexDatePrecision_, '$1'))
 }

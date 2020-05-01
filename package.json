@@ -26,6 +26,7 @@
       "isNumeric_",
       "query_",
       "regexBinary_",
+      "regexDatePrecision_",
       "regexPath_",
       "unwrapDocumentFields_",
       "updateDocument_",
