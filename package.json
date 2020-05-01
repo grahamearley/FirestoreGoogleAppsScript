@@ -1,0 +1,36 @@
+{
+  "name": "firestore_google-apps-script",
+  "version": "23",
+  "description": "A Google Apps Script library for accessing Google Cloud Firestore",
+  "homepage": "https://github.com/grahamearley/FirestoreGoogleAppsScript",
+  "bugs": "https://github.com/grahamearley/FirestoreGoogleAppsScript/issues",
+  "license": "MIT",
+  "standard": {
+    "globals": [
+      "FirestoreQuery_",
+      "FirestoreRequest_",
+      "UrlFetchApp",
+      "Utilities",
+      "base64EncodeSafe_",
+      "createDocument_",
+      "createFirestoreDocument_",
+      "deleteDocument_",
+      "fetchObject_",
+      "getAuthToken_",
+      "getCollectionFromPath_",
+      "getDocumentFromPath_",
+      "getDocumentIds_",
+      "getDocument_",
+      "isInt_",
+      "isNumberNaN_",
+      "isNumeric_",
+      "query_",
+      "regexBinary_",
+      "regexDatePrecision_",
+      "regexPath_",
+      "unwrapDocumentFields_",
+      "updateDocument_",
+      "wrapValue_"
+    ]
+  }
+}

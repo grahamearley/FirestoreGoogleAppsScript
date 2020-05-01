@@ -1,3 +1,4 @@
 LICENSE
 !appsscript.json
 *.md
+package*.json

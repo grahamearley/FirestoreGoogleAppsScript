@@ -1,5 +1,4 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals FirestoreQuery_, getCollectionFromPath_, regexPath_, unwrapDocumentFields_ */
 
 /**
  * Get the Firestore document or collection at a given path.
@@ -84,7 +83,7 @@ function getDocumentIds_ (path, request) {
  */
 function getDocument_ (path, request) {
   const doc = get_(path, request)
-  if (!doc['fields']) {
+  if (!doc.fields) {
     throw new Error('No document with `fields` found at path ' + path)
   }
   return unwrapDocumentFields_(doc)

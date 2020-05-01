@@ -1,9 +1,10 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals isInt_, regexPath_, regexBinary_ */
+/* eslint quote-props: ["error", "always"] */
 
 /**
  * Create a Firestore documents with the corresponding fields.
  *
+ * @private
  * @param {object} fields the document's fields
  * @return {object} a Firestore document with the given fields
  */
@@ -14,21 +15,22 @@ function createFirestoreDocument_ (fields) {
     return o
   }, {})
 
-  return {fields: fieldsObj}
+  return { 'fields': fieldsObj }
 }
 
 /**
  * Extract fields from a Firestore document.
  *
+ * @private
  * @param {object} firestoreDoc the Firestore document whose fields will be extracted
  * @return {object} an object with the given document's fields and values
  */
 function getFieldsFromFirestoreDocument_ (firestoreDoc) {
-  if (!firestoreDoc || !firestoreDoc['fields']) {
+  if (!firestoreDoc || !firestoreDoc.fields) {
     return {}
   }
 
-  const fields = firestoreDoc['fields']
+  const fields = firestoreDoc.fields
   const keys = Object.keys(fields)
   const object = keys.reduce(function (o, key) {
     o[key] = unwrapValue_(fields[key])
@@ -48,6 +50,12 @@ function getFieldsFromFirestoreDocument_ (firestoreDoc) {
 function unwrapDocumentFields_ (docResponse) {
   if (docResponse.fields) {
     docResponse.fields = getFieldsFromFirestoreDocument_(docResponse)
+  }
+  if (docResponse.createTime) {
+    docResponse.createTime = unwrapDate_(docResponse.createTime)
+  }
+  if (docResponse.updateTime) {
+    docResponse.updateTime = unwrapDate_(docResponse.updateTime)
   }
   return docResponse
 }
@@ -87,9 +95,9 @@ function unwrapValue_ (value) {
     case 'mapValue':
       return getFieldsFromFirestoreDocument_(value)
     case 'arrayValue':
-      return unwrapArray_(value['values'])
+      return unwrapArray_(value.values)
     case 'timestampValue':
-      return new Date(value)
+      return unwrapDate_(value)
     case 'nullValue':
     default: // error
       return null
@@ -107,7 +115,7 @@ function wrapString_ (string) {
     return wrapBytes_(string)
   }
 
-  return {'stringValue': string}
+  return { 'stringValue': string }
 }
 
 function wrapObject_ (object) {
@@ -127,19 +135,19 @@ function wrapObject_ (object) {
     return wrapLatLong_(object)
   }
 
-  return {'mapValue': createFirestoreDocument_(object)}
+  return { 'mapValue': createFirestoreDocument_(object) }
 }
 
 function wrapNull_ () {
-  return {'nullValue': null}
+  return { 'nullValue': null }
 }
 
 function wrapBytes_ (bytes) {
-  return {'bytesValue': bytes}
+  return { 'bytesValue': bytes }
 }
 
 function wrapRef_ (ref) {
-  return {'referenceValue': ref}
+  return { 'referenceValue': ref }
 }
 
 function wrapNumber_ (num) {
@@ -151,31 +159,36 @@ function wrapNumber_ (num) {
 }
 
 function wrapInt_ (int) {
-  return {'integerValue': int}
+  return { 'integerValue': int }
 }
 
 function wrapDouble_ (double) {
-  return {'doubleValue': double}
+  return { 'doubleValue': double }
 }
 
 function wrapBoolean_ (boolean) {
-  return {'booleanValue': boolean}
+  return { 'booleanValue': boolean }
 }
 
 function wrapDate_ (date) {
-  return {'timestampValue': date.toISOString()}
+  return { 'timestampValue': date.toISOString() }
 }
 
 function wrapLatLong_ (latLong) {
-  return {'geoPointValue': latLong}
+  return { 'geoPointValue': latLong }
 }
 
 function wrapArray_ (array) {
   const wrappedArray = array.map(wrapValue_)
-  return {'arrayValue': {'values': wrappedArray}}
+  return { 'arrayValue': { 'values': wrappedArray } }
 }
 
 function unwrapArray_ (wrappedArray) {
   const array = (wrappedArray || []).map(unwrapValue_)
   return array
+}
+
+function unwrapDate_ (wrappedDate) {
+  // Trim out extra microsecond precision
+  return new Date(wrappedDate.replace(regexDatePrecision_, '$1'))
 }

@@ -1,14 +1,5 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
-/* globals isNumeric_, wrapValue_ */
-
-/**
- * This callback type is called `queryCallback`.
- *  Callback should utilize the Query parameter to send a request and return the response.
- *
- * @callback queryCallback
- * @param {object} query the Structured Query to utilize in the query request {@link FirestoreQuery_}
- * @returns [object] response of the sent query
- */
+/* eslint quote-props: ["error", "always"] */
 
 /**
  * An object that acts as a Query to be a structured query.
@@ -42,21 +33,21 @@ var FirestoreQuery_ = function (from, callback) {
 
   // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#FieldReference Field Reference}
   const fieldRef = function (field) {
-    return {fieldPath: field}
+    return { 'fieldPath': field }
   }
   const filter = function (field, operator, value) {
     // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#FieldFilter Field Filter}
     if (operator in fieldOps) {
       if (value == null) { // Covers null and undefined values
         operator = 'null'
-      } else if (isNumberNaN(value)) { // Covers NaN
+      } else if (isNumberNaN_(value)) { // Covers NaN
         operator = 'nan'
       } else {
         return {
-          fieldFilter: {
-            field: fieldRef(field),
-            op: fieldOps[operator],
-            value: wrapValue_(value)
+          'fieldFilter': {
+            'field': fieldRef(field),
+            'op': fieldOps[operator],
+            'value': wrapValue_(value)
           }
         }
       }
@@ -65,9 +56,9 @@ var FirestoreQuery_ = function (from, callback) {
     // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#UnaryFilter Unary Filter}
     if (operator.toLowerCase() in unaryOps) {
       return {
-        unaryFilter: {
-          field: fieldRef(field),
-          op: unaryOps[operator]
+        'unaryFilter': {
+          'field': fieldRef(field),
+          'op': unaryOps[operator]
         }
       }
     }
@@ -76,7 +67,7 @@ var FirestoreQuery_ = function (from, callback) {
 
   const query = {}
   if (from) {
-    query.from = [{collectionId: from}]
+    query.from = [{ 'collectionId': from }]
   }
 
   /**
@@ -89,7 +80,7 @@ var FirestoreQuery_ = function (from, callback) {
    */
   this.select = function (field) {
     if (!query.select) {
-      query.select = {fields: []}
+      query.select = { 'fields': [] }
     }
     if (!field || !field.trim()) { // Catch undefined or blank strings
       field = '__name__'
@@ -101,8 +92,8 @@ var FirestoreQuery_ = function (from, callback) {
 
   /**
    * Filter Query by a given field and operator (or additionally a value).
-   *  Can be repeated if multiple filters required.
-   *  Results must satisfy all filters.
+   * Can be repeated if multiple filters required.
+   * Results must satisfy all filters.
    *
    * @param {string} field The field to reference for filtering
    * @param {string} operator The operator to filter by. {@link fieldOps} {@link unaryOps}
@@ -113,9 +104,9 @@ var FirestoreQuery_ = function (from, callback) {
     if (query.where) {
       if (!query.where.compositeFilter) {
         query.where = {
-          compositeFilter: {
-            op: 'AND', // Currently "OR" is unsupported
-            filters: [
+          'compositeFilter': {
+            'op': 'AND', // Currently "OR" is unsupported
+            'filters': [
               query.where
             ]
           }
@@ -130,7 +121,7 @@ var FirestoreQuery_ = function (from, callback) {
 
   /**
    * Orders the Query results based on a field and specific direction.
-   *  Can be repeated if additional ordering is needed.
+   * Can be repeated if additional ordering is needed.
    *
    * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#Projection Select}
    * @param {string} field The field to order by.
@@ -144,8 +135,8 @@ var FirestoreQuery_ = function (from, callback) {
     const isDesc = dir && (dir.substr(0, 3).toUpperCase() === 'DEC' || dir.substr(0, 4).toUpperCase() === 'DESC')
 
     query.orderBy.push({
-      field: fieldRef(field),
-      direction: isDesc ? 'DESCENDING' : 'ASCENDING'
+      'field': fieldRef(field),
+      'direction': isDesc ? 'DESCENDING' : 'ASCENDING'
     })
     return this_
   }
@@ -159,6 +150,8 @@ var FirestoreQuery_ = function (from, callback) {
   this.offset = function (offset) {
     if (!isNumeric_(offset)) {
       throw new TypeError('Offset is not a valid number!')
+    } else if (offset < 0) {
+      throw new RangeError('Offset must be >= 0!')
     }
     query.offset = offset
     return this_
@@ -173,14 +166,41 @@ var FirestoreQuery_ = function (from, callback) {
   this.limit = function (limit) {
     if (!isNumeric_(limit)) {
       throw new TypeError('Limit is not a valid number!')
+    } else if (limit < 0) {
+      throw new RangeError('Limit must be >= 0!')
     }
     query.limit = limit
     return this_
   }
 
   /**
+   * Sets the range of Query results returned.
+   *
+   * @param {number} start Start result number (inclusive)
+   * @param {number} end End result number (inclusive)
+   * @returns {object} this query object for chaining
+   */
+  this.range = function (start, end) {
+    if (!isNumeric_(start)) {
+      throw new TypeError('Range start is not a valid number!')
+    } else if (!isNumeric_(end)) {
+      throw new TypeError('Range end is not a valid number!')
+    } else if (start < 0) {
+      throw new RangeError('Range start must be >= 0!')
+    } else if (end < 0) {
+      throw new RangeError('Range end must be >= 0!')
+    } else if (start >= end) {
+      throw new RangeError('Range start must be less than range end!')
+    }
+
+    query.offset = start
+    query.limit = end - start
+    return this_
+  }
+
+  /**
    * Executes the query with the given callback method and the generated query.
-   *  Must be used at the end of any query for execution.
+   * Must be used at the end of any query for execution.
    *
    * @returns {object} The query results from the execution
    */

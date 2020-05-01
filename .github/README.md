@@ -1,5 +1,9 @@
 # Firestore for Google Apps Scripts
+
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
 ### A Google Apps Script library for accessing Google Cloud Firestore.
+
 
 This library allows a user (or service account) to authenticate with Firestore and edit their Firestore database within a Google Apps Script.
 
