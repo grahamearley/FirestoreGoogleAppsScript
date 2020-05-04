@@ -20,8 +20,8 @@ function get_ (path, request) {
  *
  * @private
  * @param {string} path the path to the document or collection to get
- * @param {string} request the Firestore Request object to manipulate
  * @param {string} pageToken if defined, is utilized for retrieving subsequent pages
+ * @param {string} request the Firestore Request object to manipulate
  * @return {object} the JSON response from the GET request
  */
 function getPage_ (path, pageToken, request) {
@@ -115,9 +115,10 @@ function getDocuments_ (path, request, ids) {
  */
 function query_ (path, request) {
   const grouped = getCollectionFromPath_(path)
+  request.route('runQuery')
   const callback = function (query) {
     // Send request to innermost document with given query
-    const responseObj = request.post(grouped[0] + ':runQuery', {
+    const responseObj = request.post(grouped[0], {
       'structuredQuery': query
     })
 

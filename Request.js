@@ -43,15 +43,15 @@ var FirestoreRequest_ = function (url, authToken, options) {
    */
   const method = function (type, path) {
     options.method = type
-    return fetchObject_(url + (path || '') + queryString, options)
+    return fetchObject_(url + cleanPath_(path || '') + queryString, options)
   }
 
   /**
    * Adds a parameter to the URL query string.
    *  Can be repeated for additional key-value mappings
    *
-   * @param key the key to add
-   * @param value the value to set
+   * @param {string} key the key to add
+   * @param {string} value the value to set
    * @returns {FirestoreRequest_} this request to be chained
    */
   this.addParam = function (key, value) {
@@ -60,10 +60,22 @@ var FirestoreRequest_ = function (url, authToken, options) {
     queryString += (queryString.indexOf('?') === -1 ? '?' : '&') + key + '=' + value
     return this_
   }
+
+  /**
+   * Alters the route by prepending the query string.
+   *
+   * @param {string} route to set
+   * @returns {FirestoreRequest_} this request to be chained
+   */
+  this.route = function (route) {
+    queryString = ':' + route + queryString
+    return this_
+  }
+
   /**
    * Set request as a GET method
    *
-   * @param path the path to send the request to
+   * @param {string} path the path to send the request to
    * @returns {FirestoreRequest_} this request to be chained
    */
   this.get = function (path) {

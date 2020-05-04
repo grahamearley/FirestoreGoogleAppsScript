@@ -2,11 +2,10 @@
 /* eslint quote-props: ["error", "always"] */
 
 /**
- * An object that acts as a Query to be a structured query.
+ * An internal object that acts as a Structured Query to be prepared before execution.
  * Chain methods to update query. Must call .execute to send request.
  *
  * @constructor
- * @private
  * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1/StructuredQuery Firestore Structured Query}
  * @param {string} from the base collection to query
  * @param {queryCallback} callback the function that is executed with the internally compiled query

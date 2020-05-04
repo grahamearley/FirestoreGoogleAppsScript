@@ -122,10 +122,41 @@ function getColDocFromPath_ (path, isDocument) {
   })
   const len = splitPath.length
 
+  cleanParts_(splitPath)
+
   // Set item path to document if isDocument, otherwise set to collection if exists.
   // This works because path is always in the format of "collection/document/collection/document/etc.."
   const item = len && len & 1 ^ isDocument ? splitPath.splice(len - 1, 1)[0] : ''
 
   // Remainder of path is in splitPath. Put back together and return.
   return [splitPath.join('/'), item]
+}
+
+/**
+ * Validates Collection and Document names
+ *
+ * @private
+ * @see {@link https://firebase.google.com/docs/firestore/quotas#collections_documents_and_fields Firestore Limits}
+ * @param {array} parts Array of strings representing document path
+ * @returns {array} of URI Encoded path names
+ * @throws {Error} Validation errors if it doesn't meet API guidelines
+ */
+function cleanParts_ (parts) {
+  return parts.map(function (part, i) {
+    var type = i & 1 ? 'Collection' : 'Document'
+    if (part === '.' || part === '..') { throw new TypeError(type + ' name cannot solely consist of a single period (.) or double periods (..)') }
+    if (part.indexOf('__') === 0 && part.endsWith('__')) { throw new TypeError(type + ' name cannot be a dunder name (begin and end with double underscores)') }
+    return encodeURIComponent(part)
+  })
+}
+
+/**
+ * Splits up path to be cleaned
+ *
+ * @private
+ * @param {string} path to be cleaned
+ * @returns {string} path that is URL-safe
+ */
+function cleanPath_ (path) {
+  return cleanParts_(path.split('/')).join('/')
 }

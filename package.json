@@ -1,6 +1,6 @@
 {
   "name": "firestore_google-apps-script",
-  "version": "24",
+  "version": "25",
   "description": "A Google Apps Script library for accessing Google Cloud Firestore",
   "homepage": "https://github.com/grahamearley/FirestoreGoogleAppsScript",
   "bugs": "https://github.com/grahamearley/FirestoreGoogleAppsScript/issues",
@@ -12,6 +12,7 @@
       "UrlFetchApp",
       "Utilities",
       "base64EncodeSafe_",
+      "cleanPath_",
       "createDocument_",
       "createFirestoreDocument_",
       "deleteDocument_",
