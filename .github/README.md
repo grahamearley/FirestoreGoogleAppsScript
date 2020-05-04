@@ -27,10 +27,10 @@ To make a service account,
 5. When you press "Create," your browser will download a `.json` file with your private key (`private_key`), service account email (`client_email`), and project ID (`project_id`). Copy these values into your Google Apps Script — you'll need them to authenticate with Firestore.
 
 #### Create a test document in Firestore from your script
-Now, with your service account client email address `email`, private key `key`, and project ID `projectId`, we will authenticate with Firestore to get our `Firestore` object. To do this, get the `Firestore` object from the library:
+Now, with your service account client email address `email`, private key `key`, project ID `projectId`, and Firestore API version, we will authenticate with Firestore to get our `Firestore` object. To do this, get the `Firestore` object from the library:
 
 ```javascript
-var firestore = FirestoreApp.getFirestore(email, key, projectId);
+var firestore = FirestoreApp.getFirestore(email, key, projectId, "v1");
 ```
 
 Using this Firestore instance, we will create a Firestore document with a field `name` with value `test!`. Let's encode this as a JSON object:
@@ -71,20 +71,28 @@ You can also retrieve all documents within a collection by using the `getDocumen
 const allDocuments = firestore.getDocuments("FirstCollection")
 ```
 
-If more specific queries need to be performed, you can use the `query` function followed by an `execute` invocation to get that data:
+You can also get specific documents by providing an array of document names
 
+```javascript
+const someDocuments = firestore.getDocuments("FirstCollection", ["Doc1", "Doc2", "Doc3"])
+```
+
+
+If more specific queries need to be performed, you can use the `query` function followed by an `execute` invocation to get that data:
+    
 ```javascript
 const allDocumentsWithTest = firestore.query("FirstCollection").where("name", "==", "Test!").execute()
 ```
 
-See other library methods and details [in the wiki](https://github.com/grahamearley/FirestoreGoogleAppsScript/wiki/Firestore-Method-Documentation).
+See other library methods and details [in the wiki](https://github.com/grahamearley/FirestoreGoogleAppsScript/wiki/).
 
 ### Breaking Changes
+* v23: When retrieving documents the createTime and updateTime document properties are JS Date objects and not Timestamp Strings.
 * v16: **Removed:** `createDocumentWithId(documentId, path, fields)`
   > Utilize `createDocument(path + '/' + documentId, fields)` instead to create a document with a specific ID. 
 
 ## Contributions
-Contributions are welcome — send a pull request! This library is a work in progress. See [here](https://github.com/grahamearley/FirestoreGoogleAppsScript/blob/master/CONTRIBUTING.md) for more information on contributing.
+Contributions are welcome — send a pull request! This library is a work in progress. See [here](https://github.com/grahamearley/FirestoreGoogleAppsScript/blob/master/.github/CONTRIBUTING.md) for more information on contributing.
 
 After cloning this repository, you can push it to your own private copy of this Google Apps Script project to test it yourself. See [here](https://github.com/google/clasp) for directions on using `clasp` to develop App Scripts locally.
 

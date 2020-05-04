@@ -12,14 +12,13 @@ var regexDatePrecision_ = /(\.\d{3})\d+/
 /**
  * Checks if a number is an integer.
  *
- * @private 
+ * @private
  * @param {value} n value to check
  * @returns {boolean} true if value can be coerced into an integer, false otherwise
  */
 function isInt_ (n) {
   return n % 1 === 0
 }
-
 
 /**
  * Check if a value is a valid number.
@@ -103,7 +102,7 @@ function getCollectionFromPath_ (path) {
  *
  * @private
  * @param {string} path Document path
- * @returns {object} Document object 
+ * @returns {object} Document object
  */
 function getDocumentFromPath_ (path) {
   return getColDocFromPath_(path, true)

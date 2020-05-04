@@ -60,6 +60,22 @@ function unwrapDocumentFields_ (docResponse) {
   return docResponse
 }
 
+/**
+ * Unwrap the given array of batch documents.
+ *
+ * @private
+ * @param docsResponse the document response
+ * @return the array of documents, with unwrapped fields
+ */
+function unwrapBatchDocuments_ (docsResponse) {
+  docsResponse = docsResponse.filter(function (docItem) { return docItem.found }) // Remove missing entries
+  return docsResponse.map(function (docItem) {
+    const doc = unwrapDocumentFields_(docItem.found)
+    doc.readTime = unwrapDate_(docItem.readTime)
+    return doc
+  })
+}
+
 function wrapValue_ (value) {
   const type = typeof (value)
   switch (type) {

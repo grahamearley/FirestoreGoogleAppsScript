@@ -7,14 +7,14 @@
  *
  * @constructor
  * @private
- * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery Firestore Structured Query}
+ * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1/StructuredQuery Firestore Structured Query}
  * @param {string} from the base collection to query
  * @param {queryCallback} callback the function that is executed with the internally compiled query
  */
 var FirestoreQuery_ = function (from, callback) {
   const this_ = this
 
-  // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#Operator_1 FieldFilter Operator}
+  // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1/StructuredQuery#Operator_1 FieldFilter Operator}
   const fieldOps = {
     '==': 'EQUAL',
     '===': 'EQUAL',
@@ -22,21 +22,25 @@ var FirestoreQuery_ = function (from, callback) {
     '<=': 'LESS_THAN_OR_EQUAL',
     '>': 'GREATER_THAN',
     '>=': 'GREATER_THAN_OR_EQUAL',
-    'contains': 'ARRAY_CONTAINS'
+    'contains': 'ARRAY_CONTAINS',
+    'containsany': 'ARRAY_CONTAINS_ANY',
+    'in': 'IN'
   }
 
-  // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#Operator_2 FieldFilter Operator}
+  // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1/StructuredQuery#Operator_2 FieldFilter Operator}
   const unaryOps = {
     'nan': 'IS_NAN',
     'null': 'IS_NULL'
   }
 
-  // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#FieldReference Field Reference}
+  // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1/StructuredQuery#FieldReference Field Reference}
   const fieldRef = function (field) {
     return { 'fieldPath': field }
   }
   const filter = function (field, operator, value) {
-    // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#FieldFilter Field Filter}
+    operator = operator.toLowerCase().replace('_', '')
+
+    // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1/StructuredQuery#FieldFilter Field Filter}
     if (operator in fieldOps) {
       if (value == null) { // Covers null and undefined values
         operator = 'null'
@@ -53,7 +57,7 @@ var FirestoreQuery_ = function (from, callback) {
       }
     }
 
-    // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#UnaryFilter Unary Filter}
+    // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1/StructuredQuery#UnaryFilter Unary Filter}
     if (operator.toLowerCase() in unaryOps) {
       return {
         'unaryFilter': {
@@ -72,9 +76,9 @@ var FirestoreQuery_ = function (from, callback) {
 
   /**
    * Select Query which can narrow which fields to return.
-   *  Can be repeated if multiple fields are needed in the response.
+   * Can be repeated if multiple fields are needed in the response.
    *
-   * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#Projection Select}
+   * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1/StructuredQuery#Projection Select}
    * @param {string} field The field to narrow down (if empty, returns name of document)
    * @returns {object} this query object for chaining
    */
@@ -123,7 +127,7 @@ var FirestoreQuery_ = function (from, callback) {
    * Orders the Query results based on a field and specific direction.
    * Can be repeated if additional ordering is needed.
    *
-   * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#Projection Select}
+   * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1/StructuredQuery#Projection Select}
    * @param {string} field The field to order by.
    * @param {string} dir The direction to order the field by. Should be one of "asc" or "desc". Defaults to Ascending.
    * @returns {object} this query object for chaining

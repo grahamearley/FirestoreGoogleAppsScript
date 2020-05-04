@@ -6,10 +6,11 @@
  * @param {string} email the user email address (for authentication)
  * @param {string} key the user private key (for authentication)
  * @param {string} projectId the Firestore project ID
+ * @param {string} apiVersion [Optional] The Firestore API Version ("v1beta1", "v1beta2", or "v1")
  * @return {object} an authenticated interface with a Firestore project
  */
-function getFirestore (email, key, projectId) {
-  return new Firestore(email, key, projectId)
+function getFirestore (email, key, projectId, apiVersion) {
+  return new Firestore(email, key, projectId, apiVersion)
 }
 
 /**
@@ -19,14 +20,18 @@ function getFirestore (email, key, projectId) {
  * @param {string} email the user email address (for authentication)
  * @param {string} key the user private key (for authentication)
  * @param {string} projectId the Firestore project ID
+ * @param {string} apiVersion [Optional] The Firestore API Version ("v1beta1", "v1beta2", or "v1"). Defaults to "v1beta1"
  * @return {object} an authenticated interface with a Firestore project
  */
-var Firestore = function (email, key, projectId) {
+var Firestore = function (email, key, projectId, apiVersion) {
+  if (!apiVersion) { apiVersion = 'v1beta1' }
+
   /**
-   * The authentication token used for accessing Firestore.
-   */
+    * The authentication token used for accessing Firestore.
+    */
   const authToken = getAuthToken_(email, key, 'https://oauth2.googleapis.com/token')
-  const baseUrl = 'https://firestore.googleapis.com/v1beta1/projects/' + projectId + '/databases/(default)/documents/'
+  const basePath = 'projects/' + projectId + '/databases/(default)/documents/'
+  const baseUrl = 'https://firestore.googleapis.com/' + apiVersion + '/' + basePath
 
   /**
    * Get a document.
@@ -43,10 +48,18 @@ var Firestore = function (email, key, projectId) {
    * Get a list of all documents in a collection.
    *
    * @param {string} path the path to the collection
+   * @param {array} ids [Optional] String array of document names to filter. Missing documents will not be included.
    * @return {object} an array of the documents in the collection
    */
-  this.getDocuments = function (path) {
-    return this.query(path).execute()
+  this.getDocuments = function (path, ids) {
+    var docs
+    if (!ids) {
+      docs = this.query(path).execute()
+    } else {
+      const request = new FirestoreRequest_(baseUrl.replace('/documents/', '/documents:batchGet/'), authToken)
+      docs = getDocuments_(basePath + path, request, ids)
+    }
+    return docs
   }
 
   /**
@@ -75,8 +88,7 @@ var Firestore = function (email, key, projectId) {
   /**
    * Update/patch a document at the given path with new fields.
    *
-   * @param {string} path the path of the document to update.
-   *                      If document name not provided, a random ID will be generated.
+   * @param {string} path the path of the document to update. If document name not provided, a random ID will be generated.
    * @param {object} fields the document's new fields
    * @param {boolean} mask if true, the update will use a mask
    * @return {object} the Document object written to Firestore
@@ -87,8 +99,7 @@ var Firestore = function (email, key, projectId) {
   }
 
   /**
-   * Run a query against the Firestore Database and
-   *  return an all the documents that match the query.
+   * Run a query against the Firestore Database and return an all the documents that match the query.
    * Must call .execute() to send the request.
    *
    * @param {string} path to query

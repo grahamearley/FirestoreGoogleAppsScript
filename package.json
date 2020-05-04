@@ -1,6 +1,6 @@
 {
   "name": "firestore_google-apps-script",
-  "version": "23",
+  "version": "24",
   "description": "A Google Apps Script library for accessing Google Cloud Firestore",
   "homepage": "https://github.com/grahamearley/FirestoreGoogleAppsScript",
   "bugs": "https://github.com/grahamearley/FirestoreGoogleAppsScript/issues",
@@ -21,6 +21,7 @@
       "getDocumentFromPath_",
       "getDocumentIds_",
       "getDocument_",
+      "getDocuments_",
       "isInt_",
       "isNumberNaN_",
       "isNumeric_",
@@ -28,6 +29,7 @@
       "regexBinary_",
       "regexDatePrecision_",
       "regexPath_",
+      "unwrapBatchDocuments_",
       "unwrapDocumentFields_",
       "updateDocument_",
       "wrapValue_"
