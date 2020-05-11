@@ -1,6 +1,7 @@
 # Firestore for Google Apps Scripts
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![clasp](https://img.shields.io/badge/built%20with-clasp-4285f4.svg)](https://github.com/google/clasp)
 
 ### A Google Apps Script library for accessing Google Cloud Firestore.
 

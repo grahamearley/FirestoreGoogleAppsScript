@@ -34,8 +34,10 @@ var FirestoreQuery_ = function (from, callback) {
 
   // @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1/StructuredQuery#FieldReference Field Reference}
   const fieldRef = function (field) {
-    return { 'fieldPath': field }
+    var escapedField = field.split('.').map(function (f) { return '`' + f.replace('`', '\\`') + '`' }).join('.')
+    return { 'fieldPath': escapedField }
   }
+
   const filter = function (field, operator, value) {
     operator = operator.toLowerCase().replace('_', '')
 
