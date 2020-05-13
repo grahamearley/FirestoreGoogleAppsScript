@@ -10,8 +10,18 @@
  * @return {object} the Document object written to Firestore
  */
 function createDocument_ (path, fields, request) {
-  request.addParam('currentDocument.exists', false)
-  return updateDocument_(path, fields, request)
+  const pathDoc = getDocumentFromPath_(path)
+  const documentId = pathDoc[1]
+
+  // Use UpdateDocument to create documents that may use special characters
+  if (documentId) {
+    request.addParam('currentDocument.exists', false)
+    return updateDocument_(path, fields, request)
+  }
+
+  const firestoreObject = createFirestoreDocument_(fields)
+  const newDoc = request.post(pathDoc[0], firestoreObject)
+  return unwrapDocumentFields_(newDoc)
 }
 
 /**

@@ -14,7 +14,7 @@ function getAuthToken_ (email, key, authUrl) {
   const jwt = createJwt_(email, key, authUrl)
 
   var options = {
-    'payload': 'grant_type=' + decodeURIComponent('urn:ietf:params:oauth:grant-type:jwt-bearer') + '&assertion=' + jwt
+    'payload': 'grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=' + jwt
   }
   const responseObj = new FirestoreRequest_(authUrl, null, options).post()
   return responseObj.access_token
@@ -49,13 +49,13 @@ function createJwt_ (email, key, authUrl) {
     'iat': nowSeconds
   }
 
-  const jwtHeaderBase64 = base64EncodeSafe_(JSON.stringify(jwtHeader))
-  const jwtClaimBase64 = base64EncodeSafe_(JSON.stringify(jwtClaim))
+  const jwtHeaderBase64 = Utilities.base64EncodeWebSafe(JSON.stringify(jwtHeader))
+  const jwtClaimBase64 = Utilities.base64EncodeWebSafe(JSON.stringify(jwtClaim))
 
   const signatureInput = jwtHeaderBase64 + '.' + jwtClaimBase64
 
   const signature = Utilities.computeRsaSha256Signature(signatureInput, key)
-  const encodedSignature = base64EncodeSafe_(signature)
+  const encodedSignature = Utilities.base64EncodeWebSafe(signature)
 
   return signatureInput + '.' + encodedSignature
 }

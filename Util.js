@@ -44,18 +44,6 @@ function isNumberNaN_ (value) {
 }
 
 /**
- * Base64 Encodes a string without equals (=) symbol
- *
- * @private
- * @param {string} string string to encode
- * @returns {string} base64 encoded string (without =)
- */
-function base64EncodeSafe_ (string) {
-  const encoded = Utilities.base64EncodeWebSafe(string)
-  return encoded.replace(/=/g, '')
-}
-
-/**
  * Send HTTP request with provided options
  *
  * @private
