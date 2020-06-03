@@ -1,4 +1,10 @@
 LICENSE
-!appsscript.json
 *.md
-package*.json
+*.json
+!appsscript.json
+node_modules/**
+node_modules/**/.*/**
+node_modules/**/.*
+typings/**
+typings/**/.*/**
+typings/**/.*
