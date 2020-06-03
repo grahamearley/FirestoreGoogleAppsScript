@@ -1,0 +1,18 @@
+{
+  "timeZone": "America/Mexico_City",
+  "dependencies": {
+    "libraries": [
+      {
+        "userSymbol": "GSUnit",
+        "libraryId": "1VXHbMTCarTMcx6H_EHHhaVay4ptnl2I6FjTU8wl0my4ALmM7nLGuZ0WJ",
+        "version": "1"
+      }
+    ]
+  },
+  "webapp": {
+    "access": "ANYONE_ANONYMOUS",
+    "executeAs": "USER_DEPLOYING"
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8"
+}
