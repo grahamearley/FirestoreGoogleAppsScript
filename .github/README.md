@@ -2,12 +2,12 @@
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/grahamearley/FirestoreGoogleAppsScript)
 [![Google Apps Script](https://img.shields.io/badge/google%20apps%20script-v8-%234285f4)](https://developers.google.com/apps-script/guides/v8-runtime)
-[![TypeScript](https://img.shields.io/badge/typescript-3.9.3-%23294E80)](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html)
+[![TypeScript](https://img.shields.io/badge/typescript-3.9.5-%23294E80)](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html)
 [![clasp](https://img.shields.io/badge/built%20with-clasp-4285f4.svg)](https://github.com/google/clasp)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/grahamearley/FirestoreGoogleAppsScript)](https://github.com/grahamearley/FirestoreGoogleAppsScript/pulls)
 [![GitHub issues](https://img.shields.io/github/issues/grahamearley/FirestoreGoogleAppsScript)](https://github.com/grahamearley/FirestoreGoogleAppsScript/issues)
-![Tests](https://img.shields.io/endpoint?url=https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbyvSXmyngRI1CPvMzIm7opGgB_19fFuvLC6AakL5ezxjKsIT6I%2Fexec)
+![Tests](https://img.shields.io/endpoint?url=https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbzle3ze4mtGAcTNPlqISSFxtmPqvdcNOFauiC4Q0g%2Fexec)
 
 ### A Google Apps Script library for accessing Google Cloud Firestore.
 
