@@ -421,8 +421,19 @@ function RunTests_(): Shield {
   };
 }
 
+function cacheResults_(): string {
+  /* Script owner should set up a trigger for this function to cache the test results.
+   * The badge fetching these Test Results (on README) is set to cache the image after 1 hour.
+   * GitHub creates anonymized URLs which timeout after 3 seconds,
+   * which is longer than the time it takes to execute all the tests.
+   */
+  const results = JSON.stringify(RunTests_());
+  CacheService.getUserCache()!.put('Test Results', results);
+  return results;
+}
+
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 function doGet(_e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent): GoogleAppsScript.Content.TextOutput {
-  const response = JSON.stringify(RunTests_());
-  return ContentService.createTextOutput(response);
+  const results = CacheService.getUserCache()!.get('Test Results') || cacheResults_();
+  return ContentService.createTextOutput(results);
 }
