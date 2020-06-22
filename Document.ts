@@ -137,8 +137,9 @@ class Document implements FirestoreAPI.Document, FirestoreAPI.MapValue {
       return this.wrapArray(obj);
     }
 
-    if (obj instanceof Date) {
-      return this.wrapDate(obj);
+    // instanceof fails for code referencing this library
+    if (obj instanceof Date || obj.constructor.name === 'Date') {
+      return this.wrapDate((obj as any) as Date);
     }
 
     // Check if LatLng type
