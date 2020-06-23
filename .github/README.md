@@ -19,7 +19,7 @@ Read how this project was started [here](http://grahamearley.website/blog/2017/1
 As of **v27**, this project has been updated to use the [GAS V8 runtime](https://developers.google.com/apps-script/guides/v8-runtime) with [Typescript](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html)! This introduces a number of [breaking changes](#breaking-changes).
 
 ## Installation
-In the Google online script editor, select the `Resources` menu item and choose `Libraries...`. In the "Add a library" input box, enter `1VUSl4b1r1eoNcRWotZM3e87ygkxvXltOgyDZhixqncz9lQ3MjfT1iKFw` and click "Add." Choose the most recent version number.
+In the Google online script editor, select the `Resources` menu item and choose `Libraries...`. In the "Add a library" input box, enter **`1VUSl4b1r1eoNcRWotZM3e87ygkxvXltOgyDZhixqncz9lQ3MjfT1iKFw`** and click "Add." Choose the most recent version number.
 
 
 ## Quick start
@@ -34,14 +34,33 @@ To make a service account,
 3. For your service account's role, choose `Datastore > Cloud Datastore Owner`. 
 4. Check the "Furnish a new private key" box and select JSON as your key type. 
 5. When you press "Create," your browser will download a `.json` file with your private key (`private_key`), service account email (`client_email`), and project ID (`project_id`). Copy these values into your Google Apps Script — you'll need them to authenticate with Firestore.
+6. **[Bonus]** It is considered best practice to make use of the [Properties Service](https://developers.google.com/apps-script/guides/properties) to store this sensitive information.
 
-#### Create a test document in Firestore from your script
+#### Configurating Firestore instance from your script
 Now, with your service account client email address `email`, private key `key`, project ID `projectId`, we will authenticate with Firestore to get our `Firestore` object. To do this, get the `Firestore` object from the library:
 
 ```javascript
 const firestore = FirestoreApp.getFirestore(email, key, projectId);
 ```
 
+##### Configuration Template
+Here's a quick template to get you started (by replacing `email` and `key` with your values):
+```javascript
+const email = 'projectname-12345@appspot.gserviceaccount.com';
+const key = '-----BEGIN PRIVATE KEY-----\nPrivateKeyLine1\nPrivateKeyLine2\nPrivateKeyLineN\n-----END PRIVATE KEY-----';
+const projectId = 'projectname-12345'
+const firestore = FirestoreApp.getFirestore(email, key, projectId);
+```
+
+Alternatively, using [Properties Service](https://developers.google.com/apps-script/guides/properties) <ins>once data is already stored</ins> in the service with **"client_email"**, **"private_key"**, and **"project_id"** property names:
+```javascript
+const props = PropertiesService.getUserProperties(); // Or .getScriptProperties() if stored in Script Properties
+const [email, key, projectId] = [props.getProperty('client_email'), props.getProperty('private_key'), props.getProperty('project_id')];
+const firestore = FirestoreApp.getFirestore(email, key, projectId);
+```
+
+
+##### Creating Documents
 Using this Firestore instance, we will create a Firestore document with a field `name` with value `test!`. Let's encode this as a JSON object:
 
 ```javascript
@@ -50,17 +69,18 @@ const data = {
 }
 ```
 
-We can choose to create a document in collection called `FirstCollection` without a name (Firestore will generate one):
+We can choose to create a document in collection called **"FirstCollection"** without a name (Firestore will generate one):
 
 ```javascript
 firestore.createDocument("FirstCollection", data);
 ```
 
-Alternatively, we can create the document in the `FirstCollection` collection called `FirstDocument`:
+Alternatively, we can create the document in the **"FirstCollection"** collection called **"FirstDocument"**:
 ```javascript
 firestore.createDocument("FirstCollection/FirstDocument", data);
 ```
 
+##### Updating Documents
 To update (overwrite) the document at this location, we can use the `updateDocument` function:
 ```javascript
 firestore.updateDocument("FirstCollection/FirstDocument", data);
@@ -71,6 +91,8 @@ To update only specific fields of a document at this location, we can set the `m
 firestore.updateDocument("FirstCollection/FirstDocument", data, true);
 ```
 
+
+##### Getting Documents
 You can retrieve documents by calling the `getDocument` function:
 
 ```javascript
@@ -90,7 +112,8 @@ You can also get specific documents by providing an array of document names
 const someDocuments = firestore.getDocuments("FirstCollection", ["Doc1", "Doc2", "Doc3"]);
 ```
 
-If more specific queries need to be performed, you can use the `query` function followed by an `Execute` invocation to get that data:
+##### Getting Documents (Advanced method using Query)
+If more specific queries need to be performed, you can use the `query` function followed by an `.Execute()` invocation to get that data:
     
 ```javascript
 const allDocumentsWithTest = firestore.query("FirstCollection").Where("name", "==", "Test!").Execute();
