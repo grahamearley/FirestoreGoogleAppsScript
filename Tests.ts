@@ -1,4 +1,4 @@
-﻿function StoreCredentials_(): void {
+function StoreCredentials_(): void {
   /** DO NOT SAVE CREDENTIALS HERE */
   const email = 'xxx@appspot.gserviceaccount.com';
   const key = '-----BEGIN PRIVATE KEY-----\nLine\nLine\n-----END PRIVATE KEY-----';
@@ -201,6 +201,14 @@ class Tests implements TestManager {
     GSUnit.assertEquals(ids.length - 1, docs.length);
   }
 
+  Test_Get_Documents_Content(): void {
+    const path = 'Test Collection';
+    const ids = ['New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ'];
+    const docs = this.db.getDocuments(path, ids);
+    GSUnit.assertEquals(ids.length, docs.length);
+    GSUnit.assertObjectEquals(this.expected_, docs[0].obj);
+  }
+
   Test_Get_Documents_By_ID_Missing(): void {
     const path = 'Missing Collection';
     const ids = [
@@ -248,6 +256,12 @@ class Tests implements TestManager {
       delete doc.readTime;
     });
     GSUnit.assertArrayEquals(expected, docs);
+  }
+
+  Test_Query_One(): void {
+    const path = 'Test Collection';
+    const docs = this.db.query(path).Where('null value', null).Execute();
+    GSUnit.assertObjectEquals(this.expected_, docs[0].obj);
   }
 
   Test_Query_Select_Name(): void {

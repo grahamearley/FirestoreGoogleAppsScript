@@ -30,7 +30,7 @@ enum UnaryFilterOps_ {
  * @see {@link https://firebase.google.com/docs/firestore/reference/rest/v1/StructuredQuery Firestore Structured Query}
  */
 class Query implements FirestoreAPI.StructuredQuery {
-  select: FirestoreAPI.Projection;
+  select?: FirestoreAPI.Projection;
   from?: FirestoreAPI.CollectionSelector[];
   where?: FirestoreAPI.Filter;
   orderBy?: FirestoreAPI.Order[];
@@ -45,7 +45,6 @@ class Query implements FirestoreAPI.StructuredQuery {
    * @param {QueryCallback} callback the function that is executed with the internally compiled query
    */
   constructor(from: string, callback: QueryCallback) {
-    this.select = { fields: [] };
     this.callback = callback;
     if (from) {
       this.from = [{ collectionId: from }];
@@ -141,7 +140,9 @@ class Query implements FirestoreAPI.StructuredQuery {
       // Catch undefined or blank strings and return document name
       field = '__name__';
     }
-
+    if (!this.select) {
+      this.select = { fields: [] };
+    }
     this.select['fields']!.push(this.fieldRef_(field));
     return this;
   }

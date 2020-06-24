@@ -100,7 +100,7 @@ class FirestoreRead {
     // Remove missing entries
     documents = documents.filter((docItem: FirestoreAPI.BatchGetDocumentsResponse) => docItem.found);
     return documents.map((docItem: FirestoreAPI.BatchGetDocumentsResponse) => {
-      const doc = docItem.found! as Document;
+      const doc = new Document(docItem.found!, { readTime: docItem.readTime } as Document);
       doc.readTime = docItem.readTime;
       return doc;
     });

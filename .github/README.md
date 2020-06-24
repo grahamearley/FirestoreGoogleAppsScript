@@ -3,10 +3,10 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/grahamearley/FirestoreGoogleAppsScript)
 [![Google Apps Script](https://img.shields.io/badge/google%20apps%20script-v8-%234285f4)](https://developers.google.com/apps-script/guides/v8-runtime)
 [![TypeScript](https://img.shields.io/badge/typescript-3.9.5-%23294E80)](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html)
-[![clasp](https://img.shields.io/badge/built%20with-clasp-4285f4.svg)](https://github.com/google/clasp)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/grahamearley/FirestoreGoogleAppsScript)](https://github.com/grahamearley/FirestoreGoogleAppsScript/pulls)
-[![GitHub issues](https://img.shields.io/github/issues/grahamearley/FirestoreGoogleAppsScript)](https://github.com/grahamearley/FirestoreGoogleAppsScript/issues)
+[![clasp](https://img.shields.io/badge/built%20with-clasp-4285f4.svg)](/google/clasp)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](/prettier/prettier)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/grahamearley/FirestoreGoogleAppsScript)](/grahamearley/FirestoreGoogleAppsScript/pulls)
+[![GitHub issues](https://img.shields.io/github/issues/grahamearley/FirestoreGoogleAppsScript)](/grahamearley/FirestoreGoogleAppsScript/issues)
 ![Tests](https://img.shields.io/endpoint?url=https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbzle3ze4mtGAcTNPlqISSFxtmPqvdcNOFauiC4Q0g%2Fexec)
 
 ### A Google Apps Script library for accessing Google Cloud Firestore.
@@ -152,7 +152,7 @@ See other library methods and details [in the wiki](/grahamearley/FirestoreGoogl
 ## Contributions
 Contributions are welcome — send a pull request! See [here](/grahamearley/FirestoreGoogleAppsScript/blob/main/.github/CONTRIBUTING.md) for more information on contributing.
 
-After cloning this repository, you can push it to your own private copy of this Google Apps Script project to test it yourself. See [here](https://github.com/google/clasp) for directions on using `clasp` to develop App Scripts locally.
+After cloning this repository, you can push it to your own private copy of this Google Apps Script project to test it yourself. See [here](/google/clasp) for directions on using `clasp` to develop App Scripts locally.
 Install all packages from `package.json` with a bare `npm install`.
  
 
