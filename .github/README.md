@@ -150,7 +150,7 @@ See other library methods and details [in the wiki](/grahamearley/FirestoreGoogl
   > Utilize `createDocument(path + '/' + documentId, fields)` instead to create a document with a specific ID. 
 
 ## Contributions
-Contributions are welcome — send a pull request! See [here](/grahamearley/FirestoreGoogleAppsScript/blob/master/.github/CONTRIBUTING.md) for more information on contributing.
+Contributions are welcome — send a pull request! See [here](/grahamearley/FirestoreGoogleAppsScript/blob/main/.github/CONTRIBUTING.md) for more information on contributing.
 
 After cloning this repository, you can push it to your own private copy of this Google Apps Script project to test it yourself. See [here](https://github.com/google/clasp) for directions on using `clasp` to develop App Scripts locally.
 Install all packages from `package.json` with a bare `npm install`.
