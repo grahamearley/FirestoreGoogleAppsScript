@@ -90,7 +90,7 @@ class Document implements FirestoreAPI.Document, FirestoreAPI.MapValue {
   }
 
   static unwrapArray(wrappedArray: FirestoreAPI.Value[] = []): Value[] {
-    return wrappedArray.map(this.unwrapValue);
+    return wrappedArray.map(this.unwrapValue, this);
   }
 
   static unwrapDate(wrappedDate: string): Date {
