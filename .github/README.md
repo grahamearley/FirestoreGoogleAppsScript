@@ -7,7 +7,7 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](/prettier/prettier)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/grahamearley/FirestoreGoogleAppsScript)](/grahamearley/FirestoreGoogleAppsScript/pulls)
 [![GitHub issues](https://img.shields.io/github/issues/grahamearley/FirestoreGoogleAppsScript)](/grahamearley/FirestoreGoogleAppsScript/issues)
-![Tests](https://img.shields.io/endpoint?url=https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbzle3ze4mtGAcTNPlqISSFxtmPqvdcNOFauiC4Q0g%2Fexec)
+[![Tests](https://img.shields.io/endpoint?url=https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbzle3ze4mtGAcTNPlqISSFxtmPqvdcNOFauiC4Q0g%2Fexec)](https://img.shields.io/endpoint?url=https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbzle3ze4mtGAcTNPlqISSFxtmPqvdcNOFauiC4Q0g%2Fexec?nocache)
 
 ### A Google Apps Script library for accessing Google Cloud Firestore.
 

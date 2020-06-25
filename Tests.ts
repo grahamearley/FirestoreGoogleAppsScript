@@ -2,10 +2,11 @@ function StoreCredentials_(): void {
   /** DO NOT SAVE CREDENTIALS HERE */
   const email = 'xxx@appspot.gserviceaccount.com';
   const key = '-----BEGIN PRIVATE KEY-----\nLine\nLine\n-----END PRIVATE KEY-----';
+  const projectId = 'xxx';
   PropertiesService.getUserProperties().setProperties({
     email: email,
     key: key,
-    project: email.substr(0, email.indexOf('@')),
+    project: projectId,
   });
 }
 
@@ -15,11 +16,11 @@ class Tests implements TestManager {
   fail: Record<string, Error>;
   expected_!: Record<string, Value>;
 
-  constructor(email: string, key: string, projectId: string, apiVersion: Version = 'v1') {
+  constructor(email: string, key: string, projectId: string, apiVersion: Version = 'v1', clearCollection = false) {
     this.pass = [];
     this.fail = {};
 
-    const funcs = Object.getOwnPropertyNames(Tests.prototype).filter(
+    let funcs = Object.getOwnPropertyNames(Tests.prototype).filter(
       (property) => typeof (this as any)[property] === 'function' && property !== 'constructor'
     );
 
@@ -28,7 +29,7 @@ class Tests implements TestManager {
       this.db = getFirestore(email, key, projectId, apiVersion);
       this.pass.push('Test_Get_Firestore');
     } catch (e) {
-      /** On failure, fail the other tests too */
+      // On failure, fail the remaining tests without execution
       this.fail['Test_Get_Firestore'] = e;
       const err: Error = {
         name: 'Test Error',
@@ -57,6 +58,11 @@ class Tests implements TestManager {
       },
       'reference value': this.db.basePath + 'Test Collection/New Document',
     };
+
+    /** Only run test to remove residual Test Documents **/
+    if (clearCollection) {
+      funcs = ['Test_Delete_Documents'];
+    }
 
     /** Test all methods in this class */
     for (const func of funcs) {
@@ -332,7 +338,7 @@ class Tests implements TestManager {
   }
 
   Test_Query_Where_Nan(): void {
-    /** Unable to store NaN values to Firestore */
+    // Unable to store NaN values to Firestore, so no results
     const path = 'Test Collection';
     const docs = this.db.query(path).Where('number value', NaN).Execute();
     GSUnit.assertEquals(0, docs.length);
@@ -421,23 +427,35 @@ function RunTests_(): Shield {
     label: 'tests',
     message: `✔ ${pass.length}, ✘ ${Object.keys(fail).length}`,
     color: Object.keys(fail).length ? 'red' : 'green',
-    cacheSeconds: 3600,
+    cacheSeconds: 3600, // Always cache for 1 hour
   };
 }
 
-function cacheResults_(): string {
+function cacheResults_(cachedBadge: boolean): string {
   /* Script owner should set up a trigger for this function to cache the test results.
    * The badge fetching these Test Results (on README) is set to cache the image after 1 hour.
    * GitHub creates anonymized URLs which timeout after 3 seconds,
    * which is longer than the time it takes to execute all the tests.
    */
+  const maxCache = 3600;
   const results = JSON.stringify(RunTests_());
-  CacheService.getUserCache()!.put('Test Results', results);
-  return results;
+  CacheService.getUserCache()!.put('Test Results', results, maxCache);
+  // Send the min cache allowed @see {@link https://shields.io/endpoint ShieldsIO Endpoint}
+  return results.replace(`"cacheSeconds":${maxCache}`, `"cacheSeconds":${cachedBadge ? maxCache : 300}`);
 }
 
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-function doGet(_e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent): GoogleAppsScript.Content.TextOutput {
-  const results = CacheService.getUserCache()!.get('Test Results') || cacheResults_();
+function clearCache(): void {
+  /** Allow user to clear Cached Results **/
+  const scriptProps = PropertiesService.getUserProperties().getProperties();
+  new Tests(scriptProps['email'], scriptProps['key'], scriptProps['project'], 'v1', true);
+  CacheService.getUserCache()!.remove('Test Results');
+}
+
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+function doGet(evt: GoogleAppsScript.Events.AppsScriptHttpRequestEvent): GoogleAppsScript.Content.TextOutput {
+  // Sending /exec?nocache when calling to ignore the cache check
+  const useCache = evt.queryString !== 'nocache';
+  const results = (useCache && CacheService.getUserCache()!.get('Test Results')) || cacheResults_(useCache);
   return ContentService.createTextOutput(results);
 }

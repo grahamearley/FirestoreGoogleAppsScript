@@ -19,7 +19,7 @@ Contributions are welcome! To contribute, fork this repository and create a pull
     }
     ```
   * Add storable credentials to your script to connect to your Firestore database.
-  * Add test methods to `Test.ts` file which validates your change.
+  * Add test methods to `Tests.ts` file which validates your change. [GSUnit Reference](https://sites.google.com/site/scriptsexamples/custom-methods/gsunit)
   * Debug/Test your code against your database.
 - [ ] Have you [documented your functions and their parameters and return values with JSDoc](http://usejsdoc.org/about-getting-started.html)?
 - [ ] Have you modernized the code to run with the new [V8 Runtime](https://developers.google.com/apps-script/guides/v8-runtime)?
