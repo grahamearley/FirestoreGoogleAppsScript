@@ -1,6 +1,6 @@
 # Firestore for Google Apps Scripts
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/grahamearley/FirestoreGoogleAppsScript)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/grahamearley/FirestoreGoogleAppsScript)](/grahamearley/FirestoreGoogleAppsScript/releases/latest)
 [![Google Apps Script](https://img.shields.io/badge/google%20apps%20script-v8-%234285f4)](https://developers.google.com/apps-script/guides/v8-runtime)
 [![TypeScript](https://img.shields.io/badge/typescript-3.9.5-%23294E80)](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html)
 [![clasp](https://img.shields.io/badge/built%20with-clasp-4285f4.svg)](/google/clasp)
@@ -16,11 +16,10 @@ This library allows a user (or service account) to authenticate with Firestore a
 
 Read how this project was started [here](http://grahamearley.website/blog/2017/10/18/firestore-in-google-apps-script.html).
 
-As of **v27**, this project has been updated to use the [GAS V8 runtime](https://developers.google.com/apps-script/guides/v8-runtime) with [Typescript](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html)! This introduces a number of [breaking changes](#breaking-changes).
+As of **v27**, this project has been updated to use the [GAS V8 runtime](https://developers.google.com/apps-script/guides/v8-runtime) with [Typescript](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html)! This introduces a number of [breaking changes](#breaking-changes). Scripts utilizing the old Rhino runtime must use **v26**.
 
 ## Installation
 In the Google online script editor, select the `Resources` menu item and choose `Libraries...`. In the "Add a library" input box, enter **`1VUSl4b1r1eoNcRWotZM3e87ygkxvXltOgyDZhixqncz9lQ3MjfT1iKFw`** and click "Add." Choose the most recent version number.
-
 
 ## Quick start
 #### Creating a service account
@@ -97,7 +96,6 @@ You can retrieve documents by calling the `getDocument` function:
 
 ```javascript
 const documentWithMetadata = firestore.getDocument("FirstCollection/FirstDocument");
-const storedObject = documentWithMetadata.obj;
 ```
 
 You can also retrieve all documents within a collection by using the `getDocuments` function:
@@ -110,6 +108,19 @@ You can also get specific documents by providing an array of document names
 
 ```javascript
 const someDocuments = firestore.getDocuments("FirstCollection", ["Doc1", "Doc2", "Doc3"]);
+```
+
+##### Getting Document Properties
+You can access various properties of documents from Firestore:
+
+```javascript
+const doc          = firestore.getDocument("My Collection/My Document");
+const originalData = doc.obj      // Original database object (your stored data)
+const readTime     = doc.read     // Date Object of the Read time from database
+const updateTime   = doc.updated  // Date Object of the Updated time from database
+const createdTime  = doc.created  // Date Object of the Created time from database
+const name         = doc.name     // Full document path (projects/projName/databases/(default)/documents/My Collection/My Document)
+const path         = doc.path     // Local document path (My Collection/My Document)
 ```
 
 ##### Getting Documents (Advanced method using Query)
@@ -140,13 +151,23 @@ const documents3_4_5_6 = firestore.query("FirstCollection").Range(3, 7).Execute(
 
 See other library methods and details [in the wiki](/grahamearley/FirestoreGoogleAppsScript/wiki/).
 
+### Frequently Asked Questions
+- **I'm getting the following error:**
+  > Missing ; before statement. at \[unknown function\](Auth:12)
+
+  This is because this library has been updated to utilize the new [V8 Engine](https://developers.google.com/apps-script/guides/v8-runtime), and classes are not supported in the Rhino Engine.
+  You can either:
+    1. [Migrate your script to use V8](https://developers.google.com/apps-script/guides/v8-runtime/migration), or
+    1. Use the last Rhino version of this library (**v26**).
+
+
 ### Breaking Changes
-* **v27:** Library rewritten with Typescript and Prettier.
-  * Query function names have been capitalized (`Select`, `Where`, `OrderBy`, `Limit`, `Offset`, `Range`).
-  *  **All functions return `Document` or `Document[]` types directly from Firebase. Use `document.obj` to extract the raw object.**
-  *  Undo breaking change from v23. `document.createTime` and `document.updateTime` will remain as timestamped strings. However `document.created`, `document.updated`, and `document.read` are Date objects.
-* **v23:** When retrieving documents the createTime and updateTime document properties are JS Date objects and not Timestamp Strings.
-* **v16:** **Removed:** `createDocumentWithId(documentId, path, fields)`
+- **v27:** Library rewritten with Typescript and Prettier.
+  - Query function names have been capitalized (`Select`, `Where`, `OrderBy`, `Limit`, `Offset`, `Range`).
+  -  **All functions return `Document` or `Document[]` types directly from Firebase. Use `document.obj` to extract the raw object.**
+  -  Undo breaking change from v23. `document.createTime` and `document.updateTime` will remain as timestamped strings. However `document.created`, `document.updated`, and `document.read` are Date objects.
+- **v23:** When retrieving documents the createTime and updateTime document properties are JS Date objects and not Timestamp Strings.
+- **v16:** **Removed:** `createDocumentWithId(documentId, path, fields)`
   > Utilize `createDocument(path + '/' + documentId, fields)` instead to create a document with a specific ID. 
 
 ## Contributions

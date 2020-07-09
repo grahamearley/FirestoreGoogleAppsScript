@@ -1,6 +1,8 @@
 interface TestManager {
+  db: Firestore;
   pass: string[];
-  fail: Record<string, Error>;
+  fail: Map<string, Error>;
+  expected_: Record<string, Value>;
 }
 
 /** @see {@link https://shields.io/endpoint Source} */

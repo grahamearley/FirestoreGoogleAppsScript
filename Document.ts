@@ -39,6 +39,10 @@ class Document implements FirestoreAPI.Document, FirestoreAPI.MapValue {
     return this.readTime ? Document.unwrapDate(this.readTime) : new Date();
   }
 
+  get path() {
+    return this.name?.match(Util_.regexPath)![1];
+  }
+
   /**
    * Extract fields from a Firestore document.
    *

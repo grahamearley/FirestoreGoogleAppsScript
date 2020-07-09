@@ -13,12 +13,12 @@ function StoreCredentials_(): void {
 class Tests implements TestManager {
   db!: Firestore;
   pass: string[];
-  fail: Record<string, Error>;
+  fail: Map<string, Error>;
   expected_!: Record<string, Value>;
 
   constructor(email: string, key: string, projectId: string, apiVersion: Version = 'v1', clearCollection = false) {
     this.pass = [];
-    this.fail = {};
+    this.fail = new Map<string, Error>();
 
     let funcs = Object.getOwnPropertyNames(Tests.prototype).filter(
       (property) => typeof (this as any)[property] === 'function' && property !== 'constructor'
@@ -30,14 +30,11 @@ class Tests implements TestManager {
       this.pass.push('Test_Get_Firestore');
     } catch (e) {
       // On failure, fail the remaining tests without execution
-      this.fail['Test_Get_Firestore'] = e;
-      const err: Error = {
-        name: 'Test Error',
-        message: 'Test Initialization Error',
-        stack: 'See Test_Get_Firestore Error',
-      };
+      this.fail.set('Test_Get_Firestore', e);
+      const err = new Error('Test Initialization Error');
+      err.stack = 'See Test_Get_Firestore Error';
       for (const func of funcs) {
-        this.fail[func] = err;
+        this.fail.set(func, err);
       }
       return;
     }
@@ -70,7 +67,13 @@ class Tests implements TestManager {
         (this as any)[func]();
         this.pass.push(func);
       } catch (e) {
-        this.fail[func] = typeof e === 'string' ? { message: 'AssertionError', stack: e } : e;
+        if (typeof e === 'string') {
+          const err = new Error('AssertionError');
+          err.stack = e;
+          // eslint-disable-next-line no-ex-assign
+          e = err;
+        }
+        this.fail.set(func, e);
       }
     }
   }
@@ -96,6 +99,7 @@ class Tests implements TestManager {
     const path = 'Test Collection/New Document';
     const newDoc = this.db.createDocument(path);
     GSUnit.assertNotUndefined(newDoc);
+    GSUnit.assertEquals(path, newDoc.path);
     GSUnit.assertEquals(this.db.basePath + path, newDoc.name);
     GSUnit.assertNotUndefined(newDoc.createTime);
     GSUnit.assertNotUndefined(newDoc.updateTime);
@@ -107,14 +111,17 @@ class Tests implements TestManager {
     try {
       this.db.createDocument(path);
       GSUnit.fail('Duplicate document without error');
-    } catch (_e) {
-      /* db.createDocument should be throwing an error */
+    } catch (e) {
+      if (e.message !== `Document already exists: ${this.db.basePath}${path}`) {
+        throw e;
+      }
     }
   }
 
   Test_Create_Document_Data(): void {
     const path = 'Test Collection/New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ';
     const newDoc = this.db.createDocument(path, this.expected_);
+    GSUnit.assertEquals(path, newDoc.path);
     GSUnit.assertObjectEquals(this.expected_, newDoc.obj);
   }
 
@@ -130,6 +137,7 @@ class Tests implements TestManager {
       'null value': 'Not a Null',
     };
     const updatedDoc = this.db.updateDocument(path, expected);
+    GSUnit.assertEquals(path, updatedDoc.path);
     GSUnit.assertObjectEquals(expected, updatedDoc.obj);
   }
 
@@ -142,6 +150,7 @@ class Tests implements TestManager {
     this.db.createDocument(path, original);
     const expected = { 'number value': 42 };
     const updatedDoc = this.db.updateDocument(path, expected, false);
+    GSUnit.assertEquals(path, updatedDoc.path);
     GSUnit.assertObjectEquals(expected, updatedDoc.obj);
   }
 
@@ -155,6 +164,7 @@ class Tests implements TestManager {
     const updater = { 'string value 이': 'The new wave `~' };
     const updatedDoc = this.db.updateDocument(path, updater, true);
     Object.assign(expected, updater);
+    GSUnit.assertEquals(path, updatedDoc.path);
     GSUnit.assertObjectEquals(expected, updatedDoc.obj);
   }
 
@@ -162,6 +172,7 @@ class Tests implements TestManager {
     const path = 'Test Collection/Missing Document Overwrite';
     const expected = { 'boolean value': false };
     const updatedDoc = this.db.updateDocument(path, expected, false);
+    GSUnit.assertEquals(path, updatedDoc.path);
     GSUnit.assertObjectEquals(expected, updatedDoc.obj);
   }
 
@@ -169,12 +180,14 @@ class Tests implements TestManager {
     const path = 'Test Collection/Missing Document Mask';
     const expected = { 'boolean value': true };
     const updatedDoc = this.db.updateDocument(path, expected, true);
+    GSUnit.assertEquals(path, updatedDoc.path);
     GSUnit.assertObjectEquals(expected, updatedDoc.obj);
   }
 
   Test_Get_Document(): void {
     const path = 'Test Collection/New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ';
     const doc = this.db.getDocument(path);
+    GSUnit.assertEquals(path, doc.path);
     GSUnit.assertObjectEquals(this.expected_, doc.obj);
   }
 
@@ -183,8 +196,10 @@ class Tests implements TestManager {
     try {
       this.db.getDocument(path);
       GSUnit.fail('Missing document without error');
-    } catch (_e) {
-      /* db.getDocument should be throwing an error */
+    } catch (e) {
+      if (e.message !== `Document "${this.db.basePath}${path}" not found.`) {
+        throw e;
+      }
     }
   }
 
@@ -238,12 +253,8 @@ class Tests implements TestManager {
 
   Test_Get_Document_IDs_Missing(): void {
     const path = 'Missing Collection';
-    try {
-      this.db.getDocumentIds(path);
-      GSUnit.fail('Missing collection without error');
-    } catch (_e) {
-      /* db.getDocumentIds should be throwing an error */
-    }
+    const docs = this.db.getDocumentIds(path);
+    GSUnit.assertEquals(0, docs.length);
   }
 
   Test_Query_All(): void {
@@ -278,63 +289,113 @@ class Tests implements TestManager {
   }
 
   Test_Query_Where_EqEq_String(): void {
+    const expected = ['New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ'];
     const path = 'Test Collection';
     const docs = this.db.query(path).Where('string value 이', '==', 'The fox jumps over the lazy dog 름').Execute();
     GSUnit.assertEquals(1, docs.length);
+    GSUnit.assertArrayEqualsIgnoringOrder(
+      expected.map((p) => `${path}/${p}`),
+      docs.map((doc) => doc.path)
+    );
   }
 
   Test_Query_Where_EqEqEq_String(): void {
+    const expected = ['New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ'];
     const path = 'Test Collection';
     const docs = this.db.query(path).Where('string value 이', '===', 'The fox jumps over the lazy dog 름').Execute();
     GSUnit.assertEquals(1, docs.length);
+    GSUnit.assertArrayEqualsIgnoringOrder(
+      expected.map((p) => `${path}/${p}`),
+      docs.map((doc) => doc.path)
+    );
   }
 
   Test_Query_Where_Eq_Number(): void {
+    const expected = ['New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ'];
     const path = 'Test Collection';
     const docs = this.db.query(path).Where('number value', '==', 100).Execute();
     GSUnit.assertEquals(1, docs.length);
+    GSUnit.assertArrayEqualsIgnoringOrder(
+      expected.map((p) => `${path}/${p}`),
+      docs.map((doc) => doc.path)
+    );
   }
 
   Test_Query_Where_Lt_Number(): void {
+    const expected = ['Updatable Document Overwrite'];
     const path = 'Test Collection';
     const docs = this.db.query(path).Where('number value', '<', 100).Execute();
     GSUnit.assertEquals(1, docs.length);
+    GSUnit.assertArrayEqualsIgnoringOrder(
+      expected.map((p) => `${path}/${p}`),
+      docs.map((doc) => doc.path)
+    );
   }
 
   Test_Query_Where_Lte_Number(): void {
+    const expected = ['New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ', 'Updatable Document Overwrite'];
     const path = 'Test Collection';
     const docs = this.db.query(path).Where('number value', '<=', 100).Execute();
     GSUnit.assertEquals(2, docs.length);
+    GSUnit.assertArrayEqualsIgnoringOrder(
+      expected.map((p) => `${path}/${p}`),
+      docs.map((doc) => doc.path)
+    );
   }
 
   Test_Query_Where_Gt_Number(): void {
+    const expected = ['Updatable Document Mask'];
     const path = 'Test Collection';
     const docs = this.db.query(path).Where('number value', '>', 100).Execute();
     GSUnit.assertEquals(1, docs.length);
+    GSUnit.assertArrayEqualsIgnoringOrder(
+      expected.map((p) => `${path}/${p}`),
+      docs.map((doc) => doc.path)
+    );
   }
 
   Test_Query_Where_Gte_Number(): void {
+    const expected = ['New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ', 'Updatable Document Mask'];
     const path = 'Test Collection';
     const docs = this.db.query(path).Where('number value', '>=', 100).Execute();
     GSUnit.assertEquals(2, docs.length);
+    GSUnit.assertArrayEqualsIgnoringOrder(
+      expected.map((p) => `${path}/${p}`),
+      docs.map((doc) => doc.path)
+    );
   }
 
   Test_Query_Where_Contains(): void {
+    const expected = ['New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ'];
     const path = 'Test Collection';
     const docs = this.db.query(path).Where('array value', 'contains', 42).Execute();
     GSUnit.assertEquals(1, docs.length);
+    GSUnit.assertArrayEqualsIgnoringOrder(
+      expected.map((p) => `${path}/${p}`),
+      docs.map((doc) => doc.path)
+    );
   }
 
   Test_Query_Where_Contains_Any(): void {
+    const expected = ['New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ'];
     const path = 'Test Collection';
     const docs = this.db.query(path).Where('array value', 'containsany', [false, 0, 42, 'bar']).Execute();
     GSUnit.assertEquals(1, docs.length);
+    GSUnit.assertArrayEqualsIgnoringOrder(
+      expected.map((p) => `${path}/${p}`),
+      docs.map((doc) => doc.path)
+    );
   }
 
   Test_Query_Where_In(): void {
+    const expected = ['New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ', 'Updatable Document Overwrite'];
     const path = 'Test Collection';
     const docs = this.db.query(path).Where('number value', 'in', [0, 100, 42]).Execute();
     GSUnit.assertEquals(2, docs.length);
+    GSUnit.assertArrayEqualsIgnoringOrder(
+      expected.map((p) => `${path}/${p}`),
+      docs.map((doc) => doc.path)
+    );
   }
 
   Test_Query_Where_Nan(): void {
@@ -345,9 +406,14 @@ class Tests implements TestManager {
   }
 
   Test_Query_Where_Null(): void {
+    const expected = ['New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ'];
     const path = 'Test Collection';
     const docs = this.db.query(path).Where('null value', null).Execute();
     GSUnit.assertEquals(1, docs.length);
+    GSUnit.assertArrayEqualsIgnoringOrder(
+      expected.map((p) => `${path}/${p}`),
+      docs.map((doc) => doc.path)
+    );
     GSUnit.assertObjectEquals(this.expected_, docs[0].obj);
   }
 
@@ -415,19 +481,20 @@ class Tests implements TestManager {
   }
 }
 
-function RunTests_(): Shield {
+function RunTests_(cacheSeconds: number): Shield {
   const scriptProps = PropertiesService.getUserProperties().getProperties();
   const tests = new Tests(scriptProps['email'], scriptProps['key'], scriptProps['project'], 'v1');
   const { pass, fail } = tests;
-  Object.entries(fail).forEach(([func, err]: [string, Error]) =>
-    console.log(`Test Failed: ${func} (${err.message})\n${err.stack}`)
-  );
+  for (const [func, err] of fail) {
+    console.log(`Test Failed: ${func} (${err.message})\n${err.stack}`);
+  }
+  console.log(`Completed ${pass.length + fail.size} Tests.`);
   return {
     schemaVersion: 1,
     label: 'tests',
     message: `✔ ${pass.length}, ✘ ${Object.keys(fail).length}`,
     color: Object.keys(fail).length ? 'red' : 'green',
-    cacheSeconds: 3600, // Always cache for 1 hour
+    cacheSeconds: cacheSeconds, // Always cache for 1 hour
   };
 }
 
@@ -438,7 +505,7 @@ function cacheResults_(cachedBadge: boolean): string {
    * which is longer than the time it takes to execute all the tests.
    */
   const maxCache = 3600;
-  const results = JSON.stringify(RunTests_());
+  const results = JSON.stringify(RunTests_(maxCache));
   CacheService.getUserCache()!.put('Test Results', results, maxCache);
   // Send the min cache allowed @see {@link https://shields.io/endpoint ShieldsIO Endpoint}
   return results.replace(`"cacheSeconds":${maxCache}`, `"cacheSeconds":${cachedBadge ? maxCache : 300}`);
