@@ -1,6 +1,6 @@
 {
   "name": "firestore_google-apps-script",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "A Google Apps Script library for accessing Google Cloud Firestore",
   "homepage": "https://github.com/grahamearley/FirestoreGoogleAppsScript",
   "bugs": "https://github.com/grahamearley/FirestoreGoogleAppsScript/issues",

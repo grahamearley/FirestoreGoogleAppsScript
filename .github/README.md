@@ -1,22 +1,22 @@
 # Firestore for Google Apps Scripts
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/grahamearley/FirestoreGoogleAppsScript)](/grahamearley/FirestoreGoogleAppsScript/releases/latest)
-[![Google Apps Script](https://img.shields.io/badge/google%20apps%20script-v8-%234285f4)](https://developers.google.com/apps-script/guides/v8-runtime)
-[![TypeScript](https://img.shields.io/badge/typescript-3.9.5-%23294E80)](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html)
-[![clasp](https://img.shields.io/badge/built%20with-clasp-4285f4.svg)](/google/clasp)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](/prettier/prettier)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/grahamearley/FirestoreGoogleAppsScript)](/grahamearley/FirestoreGoogleAppsScript/pulls)
-[![GitHub issues](https://img.shields.io/github/issues/grahamearley/FirestoreGoogleAppsScript)](/grahamearley/FirestoreGoogleAppsScript/issues)
-[![Tests](https://img.shields.io/endpoint?url=https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbzle3ze4mtGAcTNPlqISSFxtmPqvdcNOFauiC4Q0g%2Fexec)](https://img.shields.io/endpoint?url=https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbzle3ze4mtGAcTNPlqISSFxtmPqvdcNOFauiC4Q0g%2Fexec?nocache)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/grahamearley/FirestoreGoogleAppsScript)](../../../releases/latest)
+[![Google Apps Script](https://img.shields.io/badge/google%20apps%20script-v8-%234285f4)](//developers.google.com/apps-script/guides/v8-runtime)
+[![TypeScript](https://img.shields.io/badge/typescript-3.9.5-%23294E80)](//typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html)
+[![clasp](https://img.shields.io/badge/built%20with-clasp-4285f4.svg)](//github.com/google/clasp)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](//github.com/prettier/prettier)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/grahamearley/FirestoreGoogleAppsScript)](../../../pulls)
+[![GitHub issues](https://img.shields.io/github/issues/grahamearley/FirestoreGoogleAppsScript)](../../../issues)
+[![Tests](https://img.shields.io/endpoint?url=https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbzle3ze4mtGAcTNPlqISSFxtmPqvdcNOFauiC4Q0g%2Fexec)](//img.shields.io/endpoint?url=https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbzle3ze4mtGAcTNPlqISSFxtmPqvdcNOFauiC4Q0g%2Fexec?nocache)
 
 ### A Google Apps Script library for accessing Google Cloud Firestore.
 
 
 This library allows a user (or service account) to authenticate with Firestore and edit their Firestore database within a Google Apps Script.
 
-Read how this project was started [here](http://grahamearley.website/blog/2017/10/18/firestore-in-google-apps-script.html).
+Read how this project was started [here](//grahamearley.website/blog/2017/10/18/firestore-in-google-apps-script.html).
 
-As of **v27**, this project has been updated to use the [GAS V8 runtime](https://developers.google.com/apps-script/guides/v8-runtime) with [Typescript](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html)! This introduces a number of [breaking changes](#breaking-changes). Scripts utilizing the old Rhino runtime must use **v26**.
+As of **v27**, this project has been updated to use the [GAS V8 runtime](//developers.google.com/apps-script/guides/v8-runtime) with [Typescript](//www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html)! This introduces a number of [breaking changes](#breaking-changes). Scripts utilizing the old Rhino runtime must use **v26**.
 
 ## Installation
 In the Google online script editor, select the `Resources` menu item and choose `Libraries...`. In the "Add a library" input box, enter **`1VUSl4b1r1eoNcRWotZM3e87ygkxvXltOgyDZhixqncz9lQ3MjfT1iKFw`** and click "Add." Choose the most recent version number.
@@ -25,15 +25,15 @@ In the Google online script editor, select the `Resources` menu item and choose 
 #### Creating a service account
 The easiest way to use this library is to create a Google Service Account for your application and give it read/write access to your datastore. Giving a service account access to your datastore is like giving access to a user's account, but this account is strictly used by your script, not by a person.
 
-If you don't already have a Firestore project you want to use, create one at the [Firebase admin console](https://console.firebase.google.com).
+If you don't already have a Firestore project you want to use, create one at the [Firebase admin console](//console.firebase.google.com).
 
 To make a service account,
-1. Open the [Google Service Accounts page by clicking here](https://console.developers.google.com/projectselector/iam-admin/serviceaccounts). 
+1. Open the [Google Service Accounts page by clicking here](//console.developers.google.com/projectselector/iam-admin/serviceaccounts). 
 2. Select your Firestore project, and then click "Create Service Account." 
 3. For your service account's role, choose `Datastore > Cloud Datastore Owner`. 
 4. Check the "Furnish a new private key" box and select JSON as your key type. 
 5. When you press "Create," your browser will download a `.json` file with your private key (`private_key`), service account email (`client_email`), and project ID (`project_id`). Copy these values into your Google Apps Script — you'll need them to authenticate with Firestore.
-6. **[Bonus]** It is considered best practice to make use of the [Properties Service](https://developers.google.com/apps-script/guides/properties) to store this sensitive information.
+6. **[Bonus]** It is considered best practice to make use of the [Properties Service](//developers.google.com/apps-script/guides/properties) to store this sensitive information.
 
 #### Configurating Firestore instance from your script
 Now, with your service account client email address `email`, private key `key`, project ID `projectId`, we will authenticate with Firestore to get our `Firestore` object. To do this, get the `Firestore` object from the library:
@@ -51,7 +51,7 @@ const projectId = 'projectname-12345'
 const firestore = FirestoreApp.getFirestore(email, key, projectId);
 ```
 
-Alternatively, using [Properties Service](https://developers.google.com/apps-script/guides/properties) <ins>once data is already stored</ins> in the service with **"client_email"**, **"private_key"**, and **"project_id"** property names:
+Alternatively, using [Properties Service](//developers.google.com/apps-script/guides/properties) <ins>once data is already stored</ins> in the service with **"client_email"**, **"private_key"**, and **"project_id"** property names:
 ```javascript
 const props = PropertiesService.getUserProperties(); // Or .getScriptProperties() if stored in Script Properties
 const [email, key, projectId] = [props.getProperty('client_email'), props.getProperty('private_key'), props.getProperty('project_id')];
@@ -149,15 +149,15 @@ const documents2_3_4_5 = firestore.query("FirstCollection").Limit(4).Offset(2).E
 const documents3_4_5_6 = firestore.query("FirstCollection").Range(3, 7).Execute();
 ```
 
-See other library methods and details [in the wiki](/grahamearley/FirestoreGoogleAppsScript/wiki/).
+See other library methods and details [in the wiki](../../../wiki).
 
 ### Frequently Asked Questions
 - **I'm getting the following error:**
   > Missing ; before statement. at \[unknown function\](Auth:12)
 
-  This is because this library has been updated to utilize the new [V8 Engine](https://developers.google.com/apps-script/guides/v8-runtime), and classes are not supported in the Rhino Engine.
+  This is because this library has been updated to utilize the new [V8 Engine](//developers.google.com/apps-script/guides/v8-runtime), and classes are not supported in the Rhino Engine.
   You can either:
-    1. [Migrate your script to use V8](https://developers.google.com/apps-script/guides/v8-runtime/migration), or
+    1. [Migrate your script to use V8](//developers.google.com/apps-script/guides/v8-runtime/migration), or
     1. Use the last Rhino version of this library (**v26**).
 
 
@@ -171,10 +171,10 @@ See other library methods and details [in the wiki](/grahamearley/FirestoreGoogl
   > Utilize `createDocument(path + '/' + documentId, fields)` instead to create a document with a specific ID. 
 
 ## Contributions
-Contributions are welcome — send a pull request! See [here](/grahamearley/FirestoreGoogleAppsScript/blob/main/.github/CONTRIBUTING.md) for more information on contributing.
+Contributions are welcome — send a pull request! See [here](CONTRIBUTING.md) for more information on contributing.
 
-After cloning this repository, you can push it to your own private copy of this Google Apps Script project to test it yourself. See [here](/google/clasp) for directions on using `clasp` to develop App Scripts locally.
+After cloning this repository, you can push it to your own private copy of this Google Apps Script project to test it yourself. See [here](//github.com/google/clasp) for directions on using `clasp` to develop App Scripts locally.
 Install all packages from `package.json` with a bare `npm install`.
  
 
-If you want to view the source code directly on Google Apps Script, where you can make a copy for yourself to edit, click [here](https://script.google.com/d/1VUSl4b1r1eoNcRWotZM3e87ygkxvXltOgyDZhixqncz9lQ3MjfT1iKFw/edit). 
+If you want to view the source code directly on Google Apps Script, where you can make a copy for yourself to edit, click [here](//script.google.com/d/1VUSl4b1r1eoNcRWotZM3e87ygkxvXltOgyDZhixqncz9lQ3MjfT1iKFw/edit). 
