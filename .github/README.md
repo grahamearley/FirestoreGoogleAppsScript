@@ -54,10 +54,10 @@ const firestore = FirestoreApp.getFirestore(email, key, projectId);
 Alternatively, using [Properties Service](//developers.google.com/apps-script/guides/properties) <ins>once data is already stored</ins> in the service with **"client_email"**, **"private_key"**, and **"project_id"** property names:
 ```javascript
 const props = PropertiesService.getUserProperties(); // Or .getScriptProperties() if stored in Script Properties
-const [email, key, projectId] = [props.getProperty('client_email'), props.getProperty('private_key'), props.getProperty('project_id')];
+const [email, key, projectId] = [props.getProperty('client_email'), props.getProperty('private_key').replace(/\\n/g, '\n'), props.getProperty('project_id')];
 const firestore = FirestoreApp.getFirestore(email, key, projectId);
 ```
-
+As a brief remark, the private key is loaded from the Property Service using `props.getProperty('private_key').replace(/\\n/g, '\n')` since the `\n` characters from the key first need to be converted into symbolic new-line characters.
 
 ##### Creating Documents
 Using this Firestore instance, we will create a Firestore document with a field `name` with value `test!`. Let's encode this as a JSON object:
