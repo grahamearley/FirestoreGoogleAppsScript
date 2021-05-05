@@ -90,6 +90,12 @@ To update only specific fields of a document at this location, we can set the `m
 firestore.updateDocument("FirstCollection/FirstDocument", data, true);
 ```
 
+##### Deleting Documents
+To delete a document at this location, we can use the `deleteDocument` function:
+```javascript
+firestore.deleteDocument("FirstCollection/FirstDocument");
+```
+**Note:** This cannot handle deleting collections or subcollections, *only* individual documents.
 
 ##### Getting Documents
 You can retrieve documents by calling the `getDocument` function:
