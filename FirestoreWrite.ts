@@ -30,16 +30,19 @@ class FirestoreWrite {
    * @param {string} path the path of the document to update
    * @param {object} fields the document's new fields
    * @param {string} request the Firestore Request object to manipulate
-   * @param {boolean} mask if true, the update will use a mask. i.e. true: updates only specific fields, false: overwrites document with specified fields
+   * @param {boolean|string[]} mask the update will mask the given fields,
+   * if is an array (of field names), that array would be used as the mask. i.e. true: updates only specific fields, false: overwrites document with specified fields
+   * see jsdoc of the `updateDocument` method in Firestore.ts for more details
    * @return {object} the Document object written to Firestore
    */
   updateDocument_(path: string, fields: Record<string, any>, request: Request, mask = false): Document {
     if (mask) {
+      const maskData = typeof mask === 'boolean' ? Object.keys(fields) : mask;
       // abort request if fields object is empty
-      if (!Object.keys(fields).length) {
+      if (!maskData.length) {
         throw new Error('Missing fields in Mask!');
       }
-      for (const field in fields) {
+      for (const field of maskData) {
         request.addParam('updateMask.fieldPaths', `\`${field.replace(/`/g, '\\`')}\``);
       }
     }
