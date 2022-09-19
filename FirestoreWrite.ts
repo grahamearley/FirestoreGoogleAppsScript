@@ -35,9 +35,15 @@ class FirestoreWrite {
    * see jsdoc of the `updateDocument` method in Firestore.ts for more details
    * @return {object} the Document object written to Firestore
    */
-  updateDocument_(path: string, fields: Record<string, any>, request: Request, mask = false): Document {
+  updateDocument_(path: string, fields: Record<string, any>, request: Request, mask?: boolean | string[]): Document {
     if (mask) {
       const maskData = typeof mask === 'boolean' ? Object.keys(fields) : mask;
+
+      // Object.keys always returns an array, so this is only for when the given mask is not a boolean.
+      if (!Array.isArray(maskData)) {
+        throw new Error('Mask must be a boolean or an array of strings!');
+      }
+
       // abort request if fields object is empty
       if (!maskData.length) {
         throw new Error('Missing fields in Mask!');

@@ -98,7 +98,7 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
    * (that way you can, for example, include a field in `mask`, but not in `fields`, and by doing so, delete that field)
    * @return {object} the Document object written to Firestore
    */
-  updateDocument(path: string, fields: Record<string, any>, mask = false): Document {
+  updateDocument(path: string, fields: Record<string, any>, mask?: boolean | string[]): Document {
     const request = new Request(this.baseUrl, this.authToken);
     return this.updateDocument_(path, fields, request, mask);
   }
