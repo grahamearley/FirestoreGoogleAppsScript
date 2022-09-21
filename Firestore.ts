@@ -93,10 +93,12 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
    *
    * @param {string} path the path of the document to update. If document name not provided, a random ID will be generated.
    * @param {object} fields the document's new fields
-   * @param {boolean} mask if true, the update will use a mask
+   * @param {boolean|string[]} mask if true, the update will mask the given fields,
+   * if is an array (of field names), that array would be used as the mask.
+   * (that way you can, for example, include a field in `mask`, but not in `fields`, and by doing so, delete that field)
    * @return {object} the Document object written to Firestore
    */
-  updateDocument(path: string, fields: Record<string, any>, mask = false): Document {
+  updateDocument(path: string, fields: Record<string, any>, mask?: boolean | string[]): Document {
     const request = new Request(this.baseUrl, this.authToken);
     return this.updateDocument_(path, fields, request, mask);
   }

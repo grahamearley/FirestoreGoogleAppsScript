@@ -90,6 +90,13 @@ To update only specific fields of a document at this location, we can set the `m
 firestore.updateDocument("FirstCollection/FirstDocument", data, true);
 ```
 
+Or alternatiavely, we can set the `mask` parameter to an array of field names:
+```javascript
+firestore.updateDocument("FirstCollection/FirstDocument", data, ["field1", "field2", "fieldN"]);
+```
+this is useful for [this](https://firebase.google.com/docs/firestore/reference/rest/v1beta1/projects.databases.documents/patch#query-parameters):
+> If the document exists on the server and has fields not referenced in the mask, they are left unchanged. Fields referenced in the mask, but not present in the input document (the `data` in our example), are deleted from the document on the server.
+
 ##### Deleting Documents
 To delete a document at this location, we can use the `deleteDocument` function:
 ```javascript

@@ -168,6 +168,28 @@ class Tests implements TestManager {
     GSUnit.assertObjectEquals(expected, updatedDoc.obj);
   }
 
+  Test_Update_Document_Mask_Array(): void {
+    const expected: { [key: string]: string } = {
+      field1: 'value1',
+      field2: 'value2',
+      field3: 'value3',
+    };
+    const path = 'Test Collection/Updatable Document MaskArray';
+    this.db.createDocument(path, expected);
+    const updater: { [key: string]: string } = { field2: 'new value2' };
+    const updaterMask = ['field1', 'field2'];
+    const updatedDoc = this.db.updateDocument(path, updater, updaterMask);
+    for (const field of updaterMask) {
+      if (field in updater) {
+        expected[field] = updater[field];
+      } else {
+        delete expected[field];
+      }
+    }
+    GSUnit.assertEquals(path, updatedDoc.path);
+    GSUnit.assertObjectEquals(expected, updatedDoc.obj);
+  }
+
   Test_Update_Document_Overwrite_Missing(): void {
     const path = 'Test Collection/Missing Document Overwrite';
     const expected = { 'boolean value': false };
