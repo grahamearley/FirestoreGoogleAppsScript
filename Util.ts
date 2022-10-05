@@ -148,4 +148,36 @@ class Util_ {
       .map(([k, v]) => `${process(k)}=${process(v)}`)
       .join('&');
   }
+
+  /**
+   * Create a new unique document id
+   *
+   * @return {string} a new unique document id
+   * @link https://github.com/firebase/firebase-js-sdk/blob/34ad43cc2a9863f7ac326c314d9539fcbc1f0913/packages/firestore/src/util/misc.ts#L28
+   */
+  static newId(): string {
+    // Alphanumeric characters
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    // The largest byte value that is a multiple of `char.length`.
+    const maxMultiple = Math.floor(256 / chars.length) * chars.length;
+
+    let autoId = '';
+    const targetLength = 20;
+    while (autoId.length < targetLength) {
+      const nBytes = 40;
+      const bytes = new Uint8Array(nBytes);
+      for (let i = 0; i < nBytes; i++) {
+        bytes[i] = Math.floor(Math.random() * 256);
+      }
+      for (let i = 0; i < bytes.length; ++i) {
+        // Only accept values that are [0, maxMultiple), this ensures they can
+        // be evenly mapped to indices of `chars` via a modulo operation.
+        if (autoId.length < targetLength && bytes[i] < maxMultiple) {
+          autoId += chars.charAt(bytes[i] % chars.length);
+        }
+      }
+    }
+
+    return autoId;
+  }
 }

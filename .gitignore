@@ -1,4 +1,5 @@
 .clasp.json
 .vs
+.idea
 gapps.config.json
 node_modules
