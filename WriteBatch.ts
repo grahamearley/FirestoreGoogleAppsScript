@@ -3,8 +3,15 @@
  * Can be atomic or not.
  */
 class WriteBatch {
-  private mutations_: FirestoreAPI.Write[] = [];
-  private committed_ = false;
+  #mutations: FirestoreAPI.Write[] = [];
+  #committed = false;
+
+  /**
+   * Getter to check if a WriteBatch has pending write
+   */
+  public get isEmpty() {
+    return this.#mutations.length === 0;
+  }
 
   /**
    * A container for multiple writes
@@ -52,7 +59,7 @@ class WriteBatch {
       updateMask: updateMask,
       update: update,
     };
-    this.mutations_.push(mutation);
+    this.#mutations.push(mutation);
     return this;
   }
 
@@ -111,7 +118,7 @@ class WriteBatch {
         exists: true,
       },
     };
-    this.mutations_.push(mutation);
+    this.#mutations.push(mutation);
     return this;
   }
 
@@ -128,7 +135,7 @@ class WriteBatch {
     const mutation: FirestoreAPI.Write = {
       delete: `${this._firestore.basePath}${path}`,
     };
-    this.mutations_.push(mutation);
+    this.#mutations.push(mutation);
     return this;
   }
 
@@ -139,15 +146,15 @@ class WriteBatch {
    */
   commit(atomic = false): boolean | Array<true | string | undefined> {
     this.verifyNotCommitted_();
-    this.committed_ = true;
-    if (!this.mutations_.length) {
+    this.#committed = true;
+    if (!this.#mutations.length) {
       throw new Error('A write batch cannot commit with no changes requested.');
     }
 
     const request = new Request(this._firestore.baseUrl, this._firestore.authToken);
     request.route(atomic ? 'commit' : 'batchWrite');
 
-    const payload: FirestoreAPI.CommitRequest | FirestoreAPI.BatchWriteRequest = { writes: this.mutations_ };
+    const payload: FirestoreAPI.CommitRequest | FirestoreAPI.BatchWriteRequest = { writes: this.#mutations };
     const responseObj = request.post<FirestoreAPI.CommitResponse | FirestoreAPI.BatchWriteResponse>(undefined, payload);
 
     if (atomic) return true;
@@ -155,7 +162,7 @@ class WriteBatch {
   }
 
   private verifyNotCommitted_(): void {
-    if (this.committed_) {
+    if (this.#committed) {
       throw new Error('A write batch can no longer be used after commit() ' + 'has been called.');
     }
   }
