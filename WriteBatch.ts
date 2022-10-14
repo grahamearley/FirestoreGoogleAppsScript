@@ -107,7 +107,9 @@ class WriteBatch {
       for (let i = 0; i < moreFieldsAndValues.length; i += 2) {
         fields[moreFieldsAndValues[i] as string] = moreFieldsAndValues[i + 1];
       }
-    } else fields = fieldOrUpdateData;
+    } else {
+      fields = fieldOrUpdateData;
+    }
     const updateMask: FirestoreAPI.DocumentMask = { fieldPaths: Object.keys(fields) };
     const update: FirestoreAPI.Document = new Document(fields, `${this._firestore.basePath}${path}`);
 
@@ -157,8 +159,11 @@ class WriteBatch {
     const payload: FirestoreAPI.CommitRequest | FirestoreAPI.BatchWriteRequest = { writes: this.#mutations };
     const responseObj = request.post<FirestoreAPI.CommitResponse | FirestoreAPI.BatchWriteResponse>(undefined, payload);
 
-    if (atomic) return true;
-    else return ((responseObj as FirestoreAPI.BatchWriteResponse).status || []).map((s) => !s.code || s.message);
+    if (atomic) {
+      return true;
+    } else {
+      return ((responseObj as FirestoreAPI.BatchWriteResponse).status || []).map((s) => !s.code || s.message);
+    }
   }
 
   private verifyNotCommitted_(): void {

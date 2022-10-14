@@ -27,6 +27,7 @@
     ],
     "root": true,
     "rules": {
+      "curly": "error",
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
