@@ -64,8 +64,8 @@ class WriteBatch {
   }
 
   /**
-   * Updates fields in the document referred to by the provided {@link
-   * DocumentReference}. The update will fail if applied to a document that does
+   * Updates fields in the document referred to by the provided path.
+   * The update will fail if applied to a document that does
    * not exist.
    *
    * @param {string} path - A path to the document to be updated.
