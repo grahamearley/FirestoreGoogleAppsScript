@@ -104,6 +104,75 @@ firestore.deleteDocument("FirstCollection/FirstDocument");
 ```
 **Note:** This cannot handle deleting collections or subcollections, *only* individual documents.
 
+##### Batch Write
+To do multiple operations in one request, you can utilize `WritePatch` api. It supports two modes of executing the writes, `atomic` and `non-atomic`. In `atomic` mode, it behaves like a transaction, it fails if any of the requested writes fails and changes are rolled-back. In `non-atomic` mode, the changes can happen out of order and each write would fail independently of the remaining writes.
+
+The api contains two restrictions:
+- You cannot write more than once to the same document.
+- You can have at most 500 write operations.
+
+###### To create a batch write:
+```javascript
+const batch = firestore.batch();
+```
+
+###### To add a document:
+At the moment of writing, the WriteBatch does not contain an `add` operation. The reason for that is to ensure the same functionality as Firestore JS SDK. However, we may add it later for ease of use.
+To circumvent this limitation, you would use `set` operation with a unique document id.
+```javascript
+const doc = `collectionName/${firestore.newId()}`; 
+batch.set(doc, docData);
+```
+However, this approach will **NOT** fail if the document already exists. This limitation would be an incentive to adding a `create` method that utilizes `preconditions.exists` to ensure failure if document already exist.
+
+###### To set a document:
+```javascript
+batch.set(doc, docData); // this would overwrite the document if exists, create if not
+batch.set(doc, docData, {merge: true}); // this would update/merge the document if exists, create if not
+batch.set(doc, docData, {mergeFields: ['field1', 'field2']}); // this allows to pass a write mask, only these fields would be set. If a field exists in the mask but not in data, it would be deleted from the document 
+```
+`merge` and `mergeFields` are mutually exclusive, if both are provided, `merge` takes precedence.
+
+
+###### To update a document:
+```javascript
+batch.update(doc, docData);
+```
+Another option for update:
+```javascript
+batch.update(doc, 'field1', field1Data);
+batch.update(doc, 'field1', field1Data, 'field2', field2Data, ...);
+```
+This variant is added for mere compatibility with the Firestore JS SDK.
+The update operation **fails**, if the document does not exit.
+
+###### To delete a document:
+```javascript
+batch.delete(doc);
+```
+This operation does not fail if document does not exist.
+
+###### To execute a batch write atomically:
+```javascript
+batch.commit(true);
+```
+If the commit operation fails, it throws an exception.
+
+###### To execute a batch write independently, either pass `false` or `undefined`:
+```javascript
+const results = batch.commit();
+```
+or
+```javascript
+const results = batch.commit(false);
+```
+The result of the commit operation is an array with either `true` or error message per each write operation. The order of the result array is guaranteed to have the same order as the operations in the WriteBatch.
+
+You cannot commit a WriteBatch more than once. The commit method will throw an exception if there are no write operations. You can use `isEmpty` getter, to check if the batch contains any writes.
+```javascript
+const isEmpty = batch.isEmpty;
+```
+
 ##### Getting Documents
 You can retrieve documents by calling the `getDocument` function:
 
