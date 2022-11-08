@@ -1,7 +1,6 @@
 # TypeScript typings for Cloud Firestore API v1
 
-Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development.
-
+Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. 
 For detailed description please check [documentation](https://cloud.google.com/firestore).
 
 ## Installing
@@ -9,7 +8,7 @@ For detailed description please check [documentation](https://cloud.google.com/f
 Install typings for Cloud Firestore API:
 
 ```
-npm install @types/gapi.client.firestore@v1 --save-dev
+npm install @types/gapi.client.firestore-v1 --save-dev
 ```
 
 ## Usage
@@ -26,9 +25,17 @@ gapi.load('client', () => {
 Then load api client wrapper:
 
 ```typescript
+gapi.client.load('https://firestore.googleapis.com/$discovery/rest?version=v1', () => {
+  // now we can use:
+  // gapi.client.firestore
+});
+```
+
+```typescript
+// Deprecated, use discovery document URL, see https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md#----gapiclientloadname----version----callback--
 gapi.client.load('firestore', 'v1', () => {
-  // now we can use gapi.client.firestore
-  // ...
+  // now we can use:
+  // gapi.client.firestore
 });
 ```
 
@@ -37,8 +44,8 @@ Don't forget to authenticate your client before sending any request to resources
 ```typescript
 // declare client_id registered in Google Developers Console
 var client_id = '',
-  scope = [ 
-      // View and manage your data across Google Cloud Platform services
+  scope = [
+      // See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account.
       'https://www.googleapis.com/auth/cloud-platform',
 
       // View and manage your Google Cloud Datastore data
@@ -58,7 +65,7 @@ gapi.auth.authorize(
 });
 ```
 
-After that you can use Cloud Firestore API resources:
+After that you can use Cloud Firestore API resources: <!-- TODO: make this work for multiple namespaces -->
 
 ```typescript
 ```

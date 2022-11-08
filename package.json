@@ -18,7 +18,7 @@
       "impliedStrict": true,
       "project": [
         "./tsconfig.json",
-        "./typings/gapi.client.firestore/tsconfig.json"
+        "./typings/gapi.client.firestore-v1/tsconfig.json"
       ],
       "tsconfigRootDir": "./"
     },
@@ -27,6 +27,7 @@
     ],
     "root": true,
     "rules": {
+      "curly": "error",
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -53,7 +54,7 @@
     "overrides": [
       {
         "files": [
-          "typings/gapi.client.firestore/index.d.ts"
+          "typings/gapi.client.firestore-v1/index.d.ts"
         ],
         "rules": {
           "@typescript-eslint/ban-types": "off"
@@ -72,9 +73,9 @@
     "fix": "eslint --color --fix --ext .ts . && tsc || true",
     "postinstall": "replace-in-file \"declare var console\" \"//declare var console\" node_modules/@types/google-apps-script/google-apps-script.base.d.ts"
   },
-  "repository": "github:grahamearley/FirestoreGoogleAppsScript",
+  "repository": "github:abkarino/FirestoreGoogleAppsScript",
   "dependencies": {
-    "@types/gapi.client": "^1.0.3",
+    "@types/gapi.client.firestore-v1": "^0.0.0",
     "@types/google-apps-script": "^1.0.14",
     "@types/jsonwebtoken": "^8.5.0",
     "@typescript-eslint/eslint-plugin": "^3.6.0",

@@ -131,6 +131,23 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
     return this.query_(path, request);
   }
   query_ = FirestoreRead.prototype.query_;
+
+  /**
+   * Create a batch update
+   */
+  batch(): WriteBatch {
+    return new WriteBatch(this);
+  }
+
+  /**
+   * Generates a new unique id
+   * Useful for WriteBatch create document
+   *
+   * @return {string} unique doc id
+   */
+  newId(): string {
+    return Util_.newId();
+  }
 }
 
 type Version = 'v1' | 'v1beta1' | 'v1beta2';

@@ -21,7 +21,9 @@ class Request {
     this.queryString = '';
     this.authToken = authToken || '';
 
-    if (!this.authToken) options = options || {};
+    if (!this.authToken) {
+      options = options || {};
+    }
     // Set default header options if none are passed in
     this.options = options || {
       headers: {
