@@ -48,15 +48,8 @@ class FirestoreWrite {
       if (!maskData.length) {
         throw new Error('Missing fields in Mask!');
       }
-
-      if (typeof mask === 'boolean') {
-        for (const field of maskData) {
-          request.addParam('updateMask.fieldPaths', `\`${field.replace(/`/g, '\\`')}\``);
-        }
-      } else {
-        for (const field of maskData) {
-          request.addParam('updateMask.fieldPaths', field);
-        }
+      for (const field of maskData) {
+        request.addParam('updateMask.fieldPaths', `\`${field.replace(/`/g, '\\`')}\``);
       }
     }
 
