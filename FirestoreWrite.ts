@@ -49,7 +49,7 @@ class FirestoreWrite {
         throw new Error('Missing fields in Mask!');
       }
       for (const field of maskData) {
-        request.addParam('updateMask.fieldPaths', `\`${field.replace(/`/g, '\\`')}\``);
+        request.addParam('updateMask.fieldPaths', `${field.replace(/`/g, '\\`')}`);
       }
     }
 
