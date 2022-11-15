@@ -96,11 +96,12 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
    * @param {boolean|string[]} mask if true, the update will mask the given fields,
    * if is an array (of field names), that array would be used as the mask.
    * (that way you can, for example, include a field in `mask`, but not in `fields`, and by doing so, delete that field)
+   * @param {boolean} nestedField support nested field name
    * @return {object} the Document object written to Firestore
    */
-  updateDocument(path: string, fields: Record<string, any>, mask?: boolean | string[]): Document {
+  updateDocument(path: string, fields: Record<string, any>, mask?: boolean | string[], nestedField?: boolean): Document {
     const request = new Request(this.baseUrl, this.authToken);
-    return this.updateDocument_(path, fields, request, mask);
+    return this.updateDocument_(path, fields, request, mask, nestedField);
   }
 
   updateDocument_ = FirestoreWrite.prototype.updateDocument_;
