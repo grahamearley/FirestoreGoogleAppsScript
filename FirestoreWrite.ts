@@ -56,7 +56,7 @@ class FirestoreWrite {
         }
       } else {
         for (const field of maskData) {
-          if (field.includes('`')) {
+          if (field.includes('.')) {
             request.addParam('updateMask.fieldPaths', `\`${field.replace(/`/g, '\\`')}\``);
           } else {
             request.addParam('updateMask.fieldPaths', `${field}`);
