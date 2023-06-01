@@ -33,9 +33,10 @@ class FirestoreWrite {
    * @param {boolean|string[]} mask the update will mask the given fields,
    * if is an array (of field names), that array would be used as the mask. i.e. true: updates only specific fields, false: overwrites document with specified fields
    * see jsdoc of the `updateDocument` method in Firestore.ts for more details
+   * @param {boolean} nestedField support nested field name
    * @return {object} the Document object written to Firestore
    */
-  updateDocument_(path: string, fields: Record<string, any>, request: Request, mask?: boolean | string[]): Document {
+  updateDocument_(path: string, fields: Record<string, any>, request: Request, mask?: boolean | string[], nestedField?: boolean): Document {
     if (mask) {
       const maskData = typeof mask === 'boolean' ? Object.keys(fields) : mask;
 
@@ -48,12 +49,19 @@ class FirestoreWrite {
       if (!maskData.length) {
         throw new Error('Missing fields in Mask!');
       }
-      for (const field of maskData) {
-        request.addParam('updateMask.fieldPaths', `\`${field.replace(/`/g, '\\`')}\``);
+
+      if (nestedField == true) {
+        for (const field of maskData) {
+          request.addParam('updateMask.fieldPaths', `${field}`);
+        }
+      } else {
+        for (const field of maskData) {
+          request.addParam('updateMask.fieldPaths', `\`${field.replace(/`/g, '\\`')}\``);
+        }
       }
     }
 
-    const firestoreObject = new Document(fields);
+    const firestoreObject = new Document(fields, undefined, nestedField);
     const updatedDoc = request.patch<FirestoreAPI.Document>(path, firestoreObject);
     return new Document(updatedDoc, {} as Document);
   }

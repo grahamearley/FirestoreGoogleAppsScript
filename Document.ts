@@ -13,14 +13,15 @@ class Document implements FirestoreAPI.Document, FirestoreAPI.MapValue {
    *
    * @param obj
    * @param name
+   * @param nestedField
    */
-  constructor(obj: Value | FirestoreAPI.Document, name?: string | Document | FirestoreAPI.ReadOnly) {
+  constructor(obj: Value | FirestoreAPI.Document, name?: string | Document | FirestoreAPI.ReadOnly, nestedField?:boolean) {
     //Treat parameters as existing Document with extra parameters to merge in
     if (typeof name === 'object') {
       Object.assign(this, obj);
       Object.assign(this, name);
     } else {
-      this.fields = Document.wrapMap(obj as ValueObject).fields;
+      this.fields = Document.wrapMap(obj as ValueObject, nestedField).fields;
       if (name) {
         this.name = name;
       }
@@ -102,13 +103,13 @@ class Document implements FirestoreAPI.Document, FirestoreAPI.MapValue {
     return new Date(wrappedDate.replace(Util_.regexDatePrecision, '$1'));
   }
 
-  static wrapValue(val: Value): FirestoreAPI.Value {
+  static wrapValue(val: Value, nestedfield?: boolean): FirestoreAPI.Value {
     const type = typeof val;
     switch (type) {
       case 'string':
         return this.wrapString(val as string);
       case 'object':
-        return this.wrapObject(val as ValueObject);
+        return this.wrapObject(val as ValueObject, nestedfield);
       case 'number':
         return this.wrapNumber(val as number);
       case 'boolean':
@@ -132,7 +133,7 @@ class Document implements FirestoreAPI.Document, FirestoreAPI.MapValue {
     return { stringValue: string };
   }
 
-  static wrapObject(obj: ValueObject): FirestoreAPI.Value {
+  static wrapObject(obj: ValueObject, nestedfield?: boolean): FirestoreAPI.Value {
     if (!obj) {
       return this.wrapNull();
     }
@@ -151,13 +152,27 @@ class Document implements FirestoreAPI.Document, FirestoreAPI.MapValue {
       return this.wrapLatLong(obj as FirestoreAPI.LatLng);
     }
 
-    return { mapValue: this.wrapMap(obj) };
+    return { mapValue: this.wrapMap(obj, nestedfield) };
   }
 
-  static wrapMap(obj: ValueObject): FirestoreAPI.MapValue {
+  static wrapMap(obj: ValueObject, nestedfield?:boolean): FirestoreAPI.MapValue {
     return {
       fields: Object.entries(obj).reduce((o: Record<string, FirestoreAPI.Value>, [key, val]: [string, Value]) => {
-        o[key] = Document.wrapValue(val);
+        // Support dot notation in fields
+        if (typeof nestedfield === 'boolean' && nestedfield == true) {
+          const s = key.split('.', 2);
+          if (s.length > 1) {
+            let t: ValueObject = {};
+            t[s[1]] = val;
+            let m: ValueObject = {};
+            m[s[0]] = Document.wrapValue(t, nestedfield) as Value;
+            Util_.mergeDeep(o, m);
+          } else {
+            o[key] = Document.wrapValue(val);
+          }
+        } else {
+          o[key] = Document.wrapValue(val);
+        }        
         return o;
       }, {}),
     };

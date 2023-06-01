@@ -206,6 +206,69 @@ class Tests implements TestManager {
     GSUnit.assertObjectEquals(expected, updatedDoc.obj);
   }
 
+  Test_Update_Document_Nested_Field() {
+    const path = 'Test Collection/Update Document Nested Field';
+    const original = {
+      'org number value': -100,
+      'org string value 이': 'The fox jumps over the lazy dog 름',
+    };
+    this.db.createDocument(path, original);
+    const updater = {'field.subField': 'value'};
+    const expected = {field: {subField: 'value'}};
+    const updatedDoc = this.db.updateDocument(path, updater, undefined, true);
+    GSUnit.assertEquals(path, updatedDoc.path);
+    GSUnit.assertObjectEquals(expected, updatedDoc.obj);
+  }
+
+  Test_Update_Document_Mask_Nested_Field() {
+    const path = 'Test Collection/Update Document Mask Nested Field';
+    const original = {
+      'org number value': -100,
+      'org string value 이': 'The fox jumps over the lazy dog 름',
+    };
+    this.db.createDocument(path, original);
+    const updater = {
+      'field.subField1': 'value1',
+      'field.subField2': 'value2',
+    };
+    const mask = true;
+    const expected = {
+      'org number value': -100,
+      'org string value 이': 'The fox jumps over the lazy dog 름',
+      field: {
+        subField1: 'value1',
+        subField2: 'value2',
+      }
+    };
+    const updatedDoc = this.db.updateDocument(path, updater, mask, true);
+    GSUnit.assertEquals(path, updatedDoc.path);
+    GSUnit.assertObjectEquals(expected, updatedDoc.obj);
+  }
+
+  Test_Update_Document_Mask_Array_Nested_Field() {
+    const path = 'Test Collection/Update Document Mask Array Nested Field';
+    const original = {
+      'org number value': -100,
+      'org string value 이': 'The fox jumps over the lazy dog 름',
+    };
+    this.db.createDocument(path, original);
+    const updater = {
+      'field.subField1': 'value1',
+      'field.subField2': 'value2',
+    };
+    const mask = ['field.subField2'];
+    const expected = {
+      'org number value': -100,
+      'org string value 이': 'The fox jumps over the lazy dog 름',
+      field: {
+        subField2: 'value2',
+      }
+    };
+    const updatedDoc = this.db.updateDocument(path, updater, mask, true);
+    GSUnit.assertEquals(path, updatedDoc.path);
+    GSUnit.assertObjectEquals(expected, updatedDoc.obj);
+  }
+
   Test_Get_Document(): void {
     const path = 'Test Collection/New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ';
     const doc = this.db.getDocument(path);
@@ -228,7 +291,7 @@ class Tests implements TestManager {
   Test_Get_Documents(): void {
     const path = 'Test Collection';
     const docs = this.db.getDocuments(path);
-    GSUnit.assertEquals(8, docs.length);
+    GSUnit.assertEquals(12, docs.length);
     const doc = docs.find((doc) => doc.name!.endsWith('/New Document !@#$%^&*(),.<>?;\':"[]{}|-=_+áéíóúæÆÑ'));
     GSUnit.assertNotUndefined(doc);
     GSUnit.assertObjectEquals(this.expected_, doc!.obj);
@@ -242,6 +305,9 @@ class Tests implements TestManager {
       'Updatable Document Overwrite',
       'Updatable Document Mask',
       'Missing Document',
+      'Update Document Nested Field',
+      'Update Document Mask Nested Field',
+      'Update Document Mask Array Nested Field',
     ];
     const docs = this.db.getDocuments(path, ids);
     GSUnit.assertEquals(ids.length - 1, docs.length);
@@ -255,6 +321,9 @@ class Tests implements TestManager {
       'Updatable Document Overwrite',
       'Updatable Document Mask',
       'Missing Document',
+      'Update Document Nested Field',
+      'Update Document Mask Nested Field',
+      'Update Document Mask Array Nested Field',
     ];
     const docs = this.db.getDocuments(path, ids);
     GSUnit.assertEquals(0, docs.length);
@@ -270,7 +339,7 @@ class Tests implements TestManager {
   Test_Get_Document_IDs(): void {
     const path = 'Test Collection';
     const docs = this.db.getDocumentIds(path);
-    GSUnit.assertEquals(8, docs.length);
+    GSUnit.assertEquals(12, docs.length);
   }
 
   Test_Get_Document_IDs_Missing(): void {
@@ -295,19 +364,19 @@ class Tests implements TestManager {
   Test_Query_Select_Name(): void {
     const path = 'Test Collection';
     const docs = this.db.query(path).Select().Execute();
-    GSUnit.assertEquals(8, docs.length);
+    GSUnit.assertEquals(12, docs.length);
   }
 
   Test_Query_Select_Name_Number(): void {
     const path = 'Test Collection';
     const docs = this.db.query(path).Select().Select('number value').Execute();
-    GSUnit.assertEquals(8, docs.length);
+    GSUnit.assertEquals(12, docs.length);
   }
 
   Test_Query_Select_String(): void {
     const path = 'Test Collection';
     const docs = this.db.query(path).Select('string value 이').Execute();
-    GSUnit.assertEquals(8, docs.length);
+    GSUnit.assertEquals(12, docs.length);
   }
 
   Test_Query_Where_EqEq_String(): void {
@@ -475,7 +544,7 @@ class Tests implements TestManager {
   Test_Query_Offset(): void {
     const path = 'Test Collection';
     const docs = this.db.query(path).Offset(2).Execute();
-    GSUnit.assertEquals(6, docs.length);
+    GSUnit.assertEquals(10, docs.length);
   }
 
   Test_Query_Limit(): void {
