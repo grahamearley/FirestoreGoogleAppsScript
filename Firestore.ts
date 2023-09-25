@@ -15,12 +15,13 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
    * @param {string} key the user private key (for authentication)
    * @param {string} projectId the Firestore project ID
    * @param {string} apiVersion [Optional] The Firestore API Version ("v1beta1", "v1beta2", or "v1")
+   * @param {string} databaseName [Optional] The name of the Firestore database, "(default)" is the default.
    * @return {Firestore} an authenticated interface with a Firestore project (constructor)
    */
-  constructor(email: string, key: string, projectId: string, apiVersion: Version = 'v1') {
+  constructor(email: string, key: string, projectId: string, apiVersion: Version = 'v1', databaseName:string = '(default)') {
     // The authentication token used for accessing Firestore
     this.auth = new Auth(email, key);
-    this.basePath = `projects/${projectId}/databases/(default)/documents/`;
+    this.basePath = `projects/${projectId}/databases/${databaseName}/documents/`;
     this.baseUrl = `https://firestore.googleapis.com/${apiVersion}/${this.basePath}`;
   }
 
