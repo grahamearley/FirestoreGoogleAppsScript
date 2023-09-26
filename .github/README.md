@@ -162,6 +162,14 @@ const documents2_3_4_5 = firestore.query("FirstCollection").Limit(4).Offset(2).E
 const documents3_4_5_6 = firestore.query("FirstCollection").Range(3, 7).Execute();
 ```
 
+#### Support for multiple databases in one GCP project
+By default, GCP crates only one "(default)" database; however, it is possible to have multiple databases under different names in one GCP project.
+You can access a non-default database using its name while initializing the library.
+
+```javascript
+const firestore = FirestoreApp.getFirestore(email, key, projected, "v1", yourDatabaseName);
+```
+
 See other library methods and details [in the wiki](../../../wiki).
 
 ### Frequently Asked Questions
