@@ -6,6 +6,8 @@ class Request {
   url: string;
   authToken: string;
   queryString: string;
+  projectId: string;
+  databaseName: string;
   options: RequestOptions;
   nextPageToken?: string | null;
   documents?: any[];
@@ -14,17 +16,44 @@ class Request {
   /**
    * @param url the base url to utilize
    * @param authToken authorization token to make requests
+   * @param projectId id od the GCP project
+   * @param databaseName naem otf the databaseName
+   */
+  static dbRequest(url: string, authToken: string, projectId: string, databaseName = '(default)') {
+    return new Request(url, authToken, projectId, databaseName);
+  }
+
+  /**
+   * @param url the base url to utilize
+   * @param options set of options to utilize over the default headers
+   */
+  static authRequest(url: string, options: RequestOptions) {
+    return new Request(url, '', '', '', options);
+  }
+
+  /**
+   * @param url the base url to utilize
+   * @param authToken authorization token to make requests
    * @param options [Optional] set of options to utilize over the default headers
    */
-  constructor(url: string, authToken?: string, options?: RequestOptions) {
+  constructor(
+    url: string,
+    authToken?: string,
+    projectId?: string,
+    databaseName = '(default)',
+    options?: RequestOptions
+  ) {
     this.url = url;
     this.queryString = '';
     this.authToken = authToken || '';
+    this.projectId = projectId || '';
+    this.databaseName = databaseName || '(default)';
 
     if (!this.authToken) options = options || {};
     // Set default header options if none are passed in
     this.options = options || {
       headers: {
+        'x-goog-request-params': `project_id=${projectId}&database_id=${databaseName}`,
         'content-type': 'application/json',
         'Authorization': 'Bearer ' + this.authToken,
       },
@@ -139,7 +168,7 @@ class Request {
    * @return {Request} A copy of this object
    */
   clone(): Request {
-    return new Request(this.url, this.authToken, this.options);
+    return new Request(this.url, this.authToken, this.projectId, this.databaseName, this.options);
   }
 
   /**

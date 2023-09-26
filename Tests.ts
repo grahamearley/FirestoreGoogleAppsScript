@@ -30,7 +30,7 @@ class Tests implements TestManager {
       this.pass.push('Test_Get_Firestore');
     } catch (e) {
       // On failure, fail the remaining tests without execution
-      this.fail.set('Test_Get_Firestore', e);
+      this.fail.set('Test_Get_Firestore', <Error>e);
       const err = new Error('Test Initialization Error');
       err.stack = 'See Test_Get_Firestore Error';
       for (const func of funcs) {
@@ -73,7 +73,7 @@ class Tests implements TestManager {
           // eslint-disable-next-line no-ex-assign
           e = err;
         }
-        this.fail.set(func, e);
+        this.fail.set(func, <Error>e);
       }
     }
   }
@@ -112,7 +112,7 @@ class Tests implements TestManager {
       this.db.createDocument(path);
       GSUnit.fail('Duplicate document without error');
     } catch (e) {
-      if (e.message !== `Document already exists: ${this.db.basePath}${path}`) {
+      if ((<Error>e).message !== `Document already exists: ${this.db.basePath}${path}`) {
         throw e;
       }
     }
@@ -219,7 +219,7 @@ class Tests implements TestManager {
       this.db.getDocument(path);
       GSUnit.fail('Missing document without error');
     } catch (e) {
-      if (e.message !== `Document "${this.db.basePath}${path}" not found.`) {
+      if ((<Error>e).message !== `Document "${this.db.basePath}${path}" not found.`) {
         throw e;
       }
     }
