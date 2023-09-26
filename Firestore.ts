@@ -7,6 +7,8 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
   auth: Auth;
   basePath: string;
   baseUrl: string;
+  projectId: string;
+  databaseName: string;
 
   /**
    * Constructor
@@ -15,12 +17,15 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
    * @param {string} key the user private key (for authentication)
    * @param {string} projectId the Firestore project ID
    * @param {string} apiVersion [Optional] The Firestore API Version ("v1beta1", "v1beta2", or "v1")
+   * @param {string} databaseName [Optional] database name
    * @return {Firestore} an authenticated interface with a Firestore project (constructor)
    */
-  constructor(email: string, key: string, projectId: string, apiVersion: Version = 'v1') {
+  constructor(email: string, key: string, projectId: string, apiVersion: Version = 'v1', databaseName = '(default)') {
     // The authentication token used for accessing Firestore
     this.auth = new Auth(email, key);
-    this.basePath = `projects/${projectId}/databases/(default)/documents/`;
+    this.projectId = projectId;
+    this.databaseName = databaseName;
+    this.basePath = `projects/${projectId}/databases/${databaseName}/documents/`;
     this.baseUrl = `https://firestore.googleapis.com/${apiVersion}/${this.basePath}`;
   }
 
@@ -38,7 +43,7 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
    * @return {object} the document object
    */
   getDocument(path: string): Document {
-    const request = new Request(this.baseUrl, this.authToken);
+    const request = Request.dbRequest(this.baseUrl, this.authToken, this.projectId, this.databaseName);
     return this.getDocument_(path, request);
   }
   getDocument_ = FirestoreRead.prototype.getDocument_;
@@ -55,7 +60,12 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
     if (!ids) {
       docs = this.query(path).Execute() as Document[];
     } else {
-      const request = new Request(this.baseUrl.replace('/documents/', '/documents:batchGet/'), this.authToken);
+      const request = Request.dbRequest(
+        this.baseUrl.replace('/documents/', '/documents:batchGet/'),
+        this.authToken,
+        this.projectId,
+        this.databaseName
+      );
       docs = this.getDocuments_(this.basePath + path, request, ids);
     }
     return docs;
@@ -69,7 +79,7 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
    * @return {object} an array of IDs of the documents in the collection
    */
   getDocumentIds(path: string): string[] {
-    const request = new Request(this.baseUrl, this.authToken);
+    const request = Request.dbRequest(this.baseUrl, this.authToken, this.projectId, this.databaseName);
     return this.getDocumentIds_(path, request);
   }
   getDocumentIds_ = FirestoreRead.prototype.getDocumentIds_;
@@ -82,7 +92,7 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
    * @return {object} the Document object written to Firestore
    */
   createDocument(path: string, fields?: Record<string, any>): Document {
-    const request = new Request(this.baseUrl, this.authToken);
+    const request = Request.dbRequest(this.baseUrl, this.authToken, this.projectId, this.databaseName);
     return this.createDocument_(path, fields || {}, request);
   }
 
@@ -99,7 +109,7 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
    * @return {object} the Document object written to Firestore
    */
   updateDocument(path: string, fields: Record<string, any>, mask?: boolean | string[]): Document {
-    const request = new Request(this.baseUrl, this.authToken);
+    const request = Request.dbRequest(this.baseUrl, this.authToken, this.projectId, this.databaseName);
     return this.updateDocument_(path, fields, request, mask);
   }
 
@@ -113,7 +123,7 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
    * @return {object} the JSON response from the DELETE request
    */
   deleteDocument(path: string): FirestoreAPI.Empty {
-    const request = new Request(this.baseUrl, this.authToken);
+    const request = Request.dbRequest(this.baseUrl, this.authToken, this.projectId, this.databaseName);
     return this.deleteDocument_(path, request);
   }
 
@@ -127,7 +137,7 @@ class Firestore implements FirestoreRead, FirestoreWrite, FirestoreDelete {
    * @return {object} the JSON response from the GET request
    */
   query(path: string): Query {
-    const request = new Request(this.baseUrl, this.authToken);
+    const request = Request.dbRequest(this.baseUrl, this.authToken, this.projectId, this.databaseName);
     return this.query_(path, request);
   }
   query_ = FirestoreRead.prototype.query_;
@@ -142,8 +152,15 @@ type Version = 'v1' | 'v1beta1' | 'v1beta2';
  * @param {string} key the user private key (for authentication)
  * @param {string} projectId the Firestore project ID
  * @param {string} apiVersion [Optional] The Firestore API Version ("v1beta1", "v1beta2", or "v1")
+ * @param {string} databaseName [Optional] database name
  * @return {Firestore} an authenticated interface with a Firestore project (function)
  */
-function getFirestore(email: string, key: string, projectId: string, apiVersion: Version = 'v1'): Firestore {
-  return new Firestore(email, key, projectId, apiVersion);
+function getFirestore(
+  email: string,
+  key: string,
+  projectId: string,
+  apiVersion: Version = 'v1',
+  databaseName = '(default)'
+): Firestore {
+  return new Firestore(email, key, projectId, apiVersion, databaseName);
 }

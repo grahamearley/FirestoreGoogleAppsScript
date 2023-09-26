@@ -31,7 +31,7 @@ class Auth {
    * @returns {string} The generated access token string
    */
   get accessToken(): string {
-    const request = new Request(this.authUrl, '', this.options_).post<TokenResponse>();
+    const request = Request.authRequest(this.authUrl, this.options_).post<TokenResponse>();
     return request.access_token;
   }
 
